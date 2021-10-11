@@ -1,127 +1,127 @@
-USE [GLOBAL]
-GO
+--USE [GLOBAL]
+--GO
 
-/****** Object:  Table [VISION].[CONTACT]    Script Date: 8/19/2021 7:03:30 AM ******/
-SET ANSI_NULLS ON
-GO
+--/****** Object:  Table [VISION].[CONTACT]    Script Date: 8/19/2021 7:03:30 AM ******/
+--SET ANSI_NULLS ON
+--GO
 
-SET QUOTED_IDENTIFIER ON
-GO
+--SET QUOTED_IDENTIFIER ON
+--GO
 
-CREATE TABLE [VISION].[CONTACT_Test](
-	[NAME] [nvarchar](30) NULL,
-	[PHONE1] [varchar](20) NULL,
-	[PHONE2] [varchar](20) NULL,
-	[PHONE3] [varchar](20) NULL,
-	[PAGER_ID1] [char](12) NULL,
-	[PAGER_ID2] [char](12) NULL,
-	[PAGER_ID3] [char](12) NULL,
-	[PROTOCOL1] [smallint] NULL,
-	[PROTOCOL2] [smallint] NULL,
-	[PROTOCOL3] [smallint] NULL,
-	[CALL_ANALYSIS1] [smallint] NULL,
-	[CALL_ANALYSIS2] [smallint] NULL,
-	[CALL_ANALYSIS3] [smallint] NULL,
-	[DISPATCHER_MENU_OPTIONS] [varbinary](12) NULL,
-	[DISPATCHER_PASSWORD] [char](10) NULL,
-	[OBJECT_CATEGORY] [smallint] NULL,
-	[OBJECT_SELECTION] [char](70) NULL,
-	[HOURS_DAYS1] [smallint] NULL,
-	[HOURS_DAYS2] [smallint] NULL,
-	[HOURS_DAYS3] [smallint] NULL,
-	[HOURS_DAYS4] [smallint] NULL,
-	[HOURS_DAYS5] [smallint] NULL,
-	[HOURS_DAYS6] [smallint] NULL,
-	[HOURS_DAYS7] [smallint] NULL,
-	[HOURS_DAYS8] [smallint] NULL,
-	[HOURS_DAYS9] [smallint] NULL,
-	[HOURS_DAYS10] [smallint] NULL,
-	[HOURS_START1] [smallint] NULL,
-	[HOURS_START2] [smallint] NULL,
-	[HOURS_START3] [smallint] NULL,
-	[HOURS_START4] [smallint] NULL,
-	[HOURS_START5] [smallint] NULL,
-	[HOURS_START6] [smallint] NULL,
-	[HOURS_START7] [smallint] NULL,
-	[HOURS_START8] [smallint] NULL,
-	[HOURS_START9] [smallint] NULL,
-	[HOURS_START10] [smallint] NULL,
-	[HOURS_END1] [smallint] NULL,
-	[HOURS_END2] [smallint] NULL,
-	[HOURS_END3] [smallint] NULL,
-	[HOURS_END4] [smallint] NULL,
-	[HOURS_END5] [smallint] NULL,
-	[HOURS_END6] [smallint] NULL,
-	[HOURS_END7] [smallint] NULL,
-	[HOURS_END8] [smallint] NULL,
-	[HOURS_END9] [smallint] NULL,
-	[HOURS_END10] [smallint] NULL,
-	[IXO_PASSWORD1] [char](6) NULL,
-	[IXO_PASSWORD2] [char](6) NULL,
-	[IXO_PASSWORD3] [char](6) NULL,
-	[ALIAS_NUM] [smallint] NULL,
-	[TIME_OFFSET] [smallint] NULL,
-	[ACKNOWLEDGE_INTERVAL1] [smallint] NULL,
-	[ACKNOWLEDGE_INTERVAL2] [smallint] NULL,
-	[ACKNOWLEDGE_INTERVAL3] [smallint] NULL,
-	[NO_CONNECT_INTERVAL1] [smallint] NULL,
-	[NO_CONNECT_INTERVAL2] [smallint] NULL,
-	[NO_CONNECT_INTERVAL3] [smallint] NULL,
-	[ACKNOWLEDGE_ATTEMPTS1] [smallint] NULL,
-	[ACKNOWLEDGE_ATTEMPTS2] [smallint] NULL,
-	[ACKNOWLEDGE_ATTEMPTS3] [smallint] NULL,
-	[NO_CONNECT_ATTEMPTS1] [smallint] NULL,
-	[NO_CONNECT_ATTEMPTS2] [smallint] NULL,
-	[NO_CONNECT_ATTEMPTS3] [smallint] NULL,
-	[LANGUAGE_NUM] [smallint] NULL,
-	[FORWARD_CALLS] [char](1) NULL,
-	[FORWARD_CALLS_PHONE] [smallint] NULL,
-	[FORWARD_CONTACT_LINK] [int] NULL,
-	[ORGANIZATION_LINK] [smallint] NULL,
-	[CONTACT_TYPE_LINK] [smallint] NULL,
-	[NOTES] [varchar](400) NULL,
-	[AVAILABLE] [datetime] NULL,
-	[UNAVAILABLE] [datetime] NULL,
-	[INTERFACE_PASSWORD] [varbinary](20) NULL,
-	[INTERFACE_OBJECTID] [char](10) NULL,
-	[INTERFACE_USERID] [char](20) NULL,
-	[EMAIL_ADDRESS] [varchar](100) NULL,
-	[ID] [varchar](30) NULL,
-	[TENANT_ID] [numeric](19, 0) NOT NULL,
-	[VERSION] [int] NOT NULL,
-	[LINK] [int] IDENTITY(37769,1) NOT NULL,
-	[UNAVAILABLE_START_DATE_TIME] [datetime] NULL,
-	[UNAVAILABLE_END_DATE_TIME] [datetime] NULL,
- CONSTRAINT [pk_CONTACT_Test] PRIMARY KEY CLUSTERED 
-(
-	[LINK] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY],
- CONSTRAINT [uni_CONTACT_Test_ID] UNIQUE NONCLUSTERED 
-(
-	[ID] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-) ON [PRIMARY]
-GO
+--CREATE TABLE [VISION].[CONTACT_Test](
+--	[NAME] [nvarchar](30) NULL,
+--	[PHONE1] [varchar](20) NULL,
+--	[PHONE2] [varchar](20) NULL,
+--	[PHONE3] [varchar](20) NULL,
+--	[PAGER_ID1] [char](12) NULL,
+--	[PAGER_ID2] [char](12) NULL,
+--	[PAGER_ID3] [char](12) NULL,
+--	[PROTOCOL1] [smallint] NULL,
+--	[PROTOCOL2] [smallint] NULL,
+--	[PROTOCOL3] [smallint] NULL,
+--	[CALL_ANALYSIS1] [smallint] NULL,
+--	[CALL_ANALYSIS2] [smallint] NULL,
+--	[CALL_ANALYSIS3] [smallint] NULL,
+--	[DISPATCHER_MENU_OPTIONS] [varbinary](12) NULL,
+--	[DISPATCHER_PASSWORD] [char](10) NULL,
+--	[OBJECT_CATEGORY] [smallint] NULL,
+--	[OBJECT_SELECTION] [char](70) NULL,
+--	[HOURS_DAYS1] [smallint] NULL,
+--	[HOURS_DAYS2] [smallint] NULL,
+--	[HOURS_DAYS3] [smallint] NULL,
+--	[HOURS_DAYS4] [smallint] NULL,
+--	[HOURS_DAYS5] [smallint] NULL,
+--	[HOURS_DAYS6] [smallint] NULL,
+--	[HOURS_DAYS7] [smallint] NULL,
+--	[HOURS_DAYS8] [smallint] NULL,
+--	[HOURS_DAYS9] [smallint] NULL,
+--	[HOURS_DAYS10] [smallint] NULL,
+--	[HOURS_START1] [smallint] NULL,
+--	[HOURS_START2] [smallint] NULL,
+--	[HOURS_START3] [smallint] NULL,
+--	[HOURS_START4] [smallint] NULL,
+--	[HOURS_START5] [smallint] NULL,
+--	[HOURS_START6] [smallint] NULL,
+--	[HOURS_START7] [smallint] NULL,
+--	[HOURS_START8] [smallint] NULL,
+--	[HOURS_START9] [smallint] NULL,
+--	[HOURS_START10] [smallint] NULL,
+--	[HOURS_END1] [smallint] NULL,
+--	[HOURS_END2] [smallint] NULL,
+--	[HOURS_END3] [smallint] NULL,
+--	[HOURS_END4] [smallint] NULL,
+--	[HOURS_END5] [smallint] NULL,
+--	[HOURS_END6] [smallint] NULL,
+--	[HOURS_END7] [smallint] NULL,
+--	[HOURS_END8] [smallint] NULL,
+--	[HOURS_END9] [smallint] NULL,
+--	[HOURS_END10] [smallint] NULL,
+--	[IXO_PASSWORD1] [char](6) NULL,
+--	[IXO_PASSWORD2] [char](6) NULL,
+--	[IXO_PASSWORD3] [char](6) NULL,
+--	[ALIAS_NUM] [smallint] NULL,
+--	[TIME_OFFSET] [smallint] NULL,
+--	[ACKNOWLEDGE_INTERVAL1] [smallint] NULL,
+--	[ACKNOWLEDGE_INTERVAL2] [smallint] NULL,
+--	[ACKNOWLEDGE_INTERVAL3] [smallint] NULL,
+--	[NO_CONNECT_INTERVAL1] [smallint] NULL,
+--	[NO_CONNECT_INTERVAL2] [smallint] NULL,
+--	[NO_CONNECT_INTERVAL3] [smallint] NULL,
+--	[ACKNOWLEDGE_ATTEMPTS1] [smallint] NULL,
+--	[ACKNOWLEDGE_ATTEMPTS2] [smallint] NULL,
+--	[ACKNOWLEDGE_ATTEMPTS3] [smallint] NULL,
+--	[NO_CONNECT_ATTEMPTS1] [smallint] NULL,
+--	[NO_CONNECT_ATTEMPTS2] [smallint] NULL,
+--	[NO_CONNECT_ATTEMPTS3] [smallint] NULL,
+--	[LANGUAGE_NUM] [smallint] NULL,
+--	[FORWARD_CALLS] [char](1) NULL,
+--	[FORWARD_CALLS_PHONE] [smallint] NULL,
+--	[FORWARD_CONTACT_LINK] [int] NULL,
+--	[ORGANIZATION_LINK] [smallint] NULL,
+--	[CONTACT_TYPE_LINK] [smallint] NULL,
+--	[NOTES] [varchar](400) NULL,
+--	[AVAILABLE] [datetime] NULL,
+--	[UNAVAILABLE] [datetime] NULL,
+--	[INTERFACE_PASSWORD] [varbinary](20) NULL,
+--	[INTERFACE_OBJECTID] [char](10) NULL,
+--	[INTERFACE_USERID] [char](20) NULL,
+--	[EMAIL_ADDRESS] [varchar](100) NULL,
+--	[ID] [varchar](30) NULL,
+--	[TENANT_ID] [numeric](19, 0) NOT NULL,
+--	[VERSION] [int] NOT NULL,
+--	[LINK] [int] IDENTITY(37769,1) NOT NULL,
+--	[UNAVAILABLE_START_DATE_TIME] [datetime] NULL,
+--	[UNAVAILABLE_END_DATE_TIME] [datetime] NULL,
+-- CONSTRAINT [pk_CONTACT_Test] PRIMARY KEY CLUSTERED 
+--(
+--	[LINK] ASC
+--)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY],
+-- CONSTRAINT [uni_CONTACT_Test_ID] UNIQUE NONCLUSTERED 
+--(
+--	[ID] ASC
+--)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+--) ON [PRIMARY]
+--GO
 
-ALTER TABLE [VISION].[CONTACT_Test] ADD  DEFAULT ((0)) FOR [TENANT_ID]
-GO
+--ALTER TABLE [VISION].[CONTACT_Test] ADD  DEFAULT ((0)) FOR [TENANT_ID]
+--GO
 
-ALTER TABLE [VISION].[CONTACT_Test] ADD  DEFAULT ((1)) FOR [VERSION]
-GO
+--ALTER TABLE [VISION].[CONTACT_Test] ADD  DEFAULT ((1)) FOR [VERSION]
+--GO
 
-ALTER TABLE [VISION].[CONTACT_Test]  WITH NOCHECK ADD  CONSTRAINT [FK_CONTACT_Test_TENANT_ID] FOREIGN KEY([TENANT_ID])
-REFERENCES [VISION].[SECURITY_TENANT] ([id])
-GO
+--ALTER TABLE [VISION].[CONTACT_Test]  WITH NOCHECK ADD  CONSTRAINT [FK_CONTACT_Test_TENANT_ID] FOREIGN KEY([TENANT_ID])
+--REFERENCES [VISION].[SECURITY_TENANT] ([id])
+--GO
 
-ALTER TABLE [VISION].[CONTACT_Test] CHECK CONSTRAINT [FK_CONTACT_Test_TENANT_ID]
-GO
-
-
+--ALTER TABLE [VISION].[CONTACT_Test] CHECK CONSTRAINT [FK_CONTACT_Test_TENANT_ID]
+--GO
 
 
 
 
-----------------------------------------------------------
+
+
+------------------------------------------------------------
 
 
 DROP Table IF Exists #SecurityT
@@ -316,6 +316,7 @@ Select
            ,[UNAVAILABLE_START_DATE_TIME]
            ,[UNAVAILABLE_END_DATE_TIME]
 from vision.CONTACT 
+where Tenant_id = 0
 --where deleted = 'N';  --- EDIT this to Y or N based on Carissa Confirmation
 
 
@@ -328,7 +329,7 @@ FROM #SecurityT
 WHERE RowID = @RowCount
 
 
-Insert into Vision.CONTACT_test
+Insert into Vision.CONTACT
 (
   [NAME]
            ,[PHONE1]
@@ -522,5 +523,5 @@ GO
 
 --  Select count(*) from [VISION].[CONTACT_Test]
 
-Select * from [VISION].[CONTACT_Test]
-where TENANT_ID =1 
+--Select * from [VISION].[CONTACT_Test]
+--where TENANT_ID =1 

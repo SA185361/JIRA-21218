@@ -190,6 +190,7 @@ Select
            ,[UNAVAILABLE_START_DATE_TIME]
            ,[UNAVAILABLE_END_DATE_TIME] 
 from vision.Contact 
+where Tenant_id = 0
 --where deleted = 'N';  --- EDIT this to Y or N based on Carissa Confirmation
 
 

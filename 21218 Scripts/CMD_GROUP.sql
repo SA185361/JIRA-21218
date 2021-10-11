@@ -1,41 +1,41 @@
-USE [GLOBAL]
-GO
+--USE [GLOBAL]
+--GO
 
-/****** Object:  Table [VISION].[CMD_GROUP_Test]    Script Date: 8/19/2021 8:44:17 AM ******/
-SET ANSI_NULLS ON
-GO
+--/****** Object:  Table [VISION].[CMD_GROUP_Test]    Script Date: 8/19/2021 8:44:17 AM ******/
+--SET ANSI_NULLS ON
+--GO
 
-SET QUOTED_IDENTIFIER ON
-GO
+--SET QUOTED_IDENTIFIER ON
+--GO
 
-CREATE TABLE [VISION].[CMD_GROUP_Test](
-	[GROUP_LINK] [numeric](10, 0) Identity(4,1)NOT NULL,
-	[DESCRIPTION] [varchar](255) NULL,
-	[TENANT_ID] [numeric](18, 0) NOT NULL,
-	[DELETED] [char](1) NULL,
-	[VERSION] [numeric](10, 0) NULL,
-	[IMPLEMENTATION] [varchar](255) NULL,
- CONSTRAINT [PK_CMD_GROUP_Test] PRIMARY KEY CLUSTERED 
-(
-	[GROUP_LINK] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-) ON [PRIMARY]
-GO
+--CREATE TABLE [VISION].[CMD_GROUP_Test](
+--	[GROUP_LINK] [numeric](10, 0) Identity(4,1)NOT NULL,
+--	[DESCRIPTION] [varchar](255) NULL,
+--	[TENANT_ID] [numeric](18, 0) NOT NULL,
+--	[DELETED] [char](1) NULL,
+--	[VERSION] [numeric](10, 0) NULL,
+--	[IMPLEMENTATION] [varchar](255) NULL,
+-- CONSTRAINT [PK_CMD_GROUP_Test] PRIMARY KEY CLUSTERED 
+--(
+--	[GROUP_LINK] ASC
+--)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+--) ON [PRIMARY]
+--GO
 
-ALTER TABLE [VISION].[CMD_GROUP_Test] ADD  DEFAULT ((0)) FOR [TENANT_ID]
-GO
+--ALTER TABLE [VISION].[CMD_GROUP_Test] ADD  DEFAULT ((0)) FOR [TENANT_ID]
+--GO
 
-ALTER TABLE [VISION].[CMD_GROUP_Test] ADD  DEFAULT ('N') FOR [DELETED]
-GO
+--ALTER TABLE [VISION].[CMD_GROUP_Test] ADD  DEFAULT ('N') FOR [DELETED]
+--GO
 
-ALTER TABLE [VISION].[CMD_GROUP_Test] ADD  DEFAULT ((1)) FOR [VERSION]
-GO
-
-
+--ALTER TABLE [VISION].[CMD_GROUP_Test] ADD  DEFAULT ((1)) FOR [VERSION]
+--GO
 
 
 
-----------------------------------------------------------
+
+
+------------------------------------------------------------
 
 
 DROP Table IF Exists #SecurityT
@@ -85,6 +85,7 @@ Select
            ,[VERSION]
            ,[IMPLEMENTATION]
 from vision.CMD_GROUP 
+where Tenant_id = 0
 -- where deleted = 'N';  --- EDIT this to Y or N based on Carissa Confirmation
 
 
@@ -97,7 +98,7 @@ FROM #SecurityT
 WHERE RowID = @RowCount
 
 
-Insert into Vision.CMD_GROUP_test
+Insert into Vision.CMD_GROUP
 (
           [DESCRIPTION]
            ,[TENANT_ID]
@@ -138,5 +139,5 @@ GO
 
 --  Select count(*) from [VISION].[CMD_GROUP_Test]
 
-Select * from [VISION].[CMD_GROUP_Test]
-where TENANT_ID =1 
+--Select * from [VISION].[CMD_GROUP_Test]
+--where TENANT_ID =1 

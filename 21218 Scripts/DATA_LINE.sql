@@ -1,52 +1,52 @@
-USE [GLOBAL]
-GO
+--USE [GLOBAL]
+--GO
 
-/****** Object:  Table [VISION].[DATA_LINE_Test]    Script Date: 8/18/2021 9:47:52 AM ******/
-SET ANSI_NULLS ON
-GO
+--/****** Object:  Table [VISION].[DATA_LINE_Test]    Script Date: 8/18/2021 9:47:52 AM ******/
+--SET ANSI_NULLS ON
+--GO
 
-SET QUOTED_IDENTIFIER ON
-GO
+--SET QUOTED_IDENTIFIER ON
+--GO
 
-CREATE TABLE [VISION].[DATA_LINE_Test](
-	[LINK] [int] NOT NULL IDENTITY (15,1),
-	[DESCRIPTION] [nvarchar](30) NULL,
-	[PRCNT] [smallint] NULL,
-	[TOTAL] [int] NULL,
-	[THRESHOLD] [int] NULL,
-	[DOWN] [int] NULL,
-	[OBJECT_LINK] [int] NULL,
-	[THRESHOLD_PERCENT] [smallint] NULL,
-	[TENANT_ID] [numeric](19, 0) NOT NULL,
-	[DELETED] [char](1) NOT NULL,
-	[VERSION] [int] NOT NULL,
- CONSTRAINT [pk_DATA_LINE_Test] PRIMARY KEY CLUSTERED 
-(
-	[LINK] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, FILLFACTOR = 90) ON [PRIMARY]
-) ON [PRIMARY]
-GO
+--CREATE TABLE [VISION].[DATA_LINE_Test](
+--	[LINK] [int] NOT NULL IDENTITY (15,1),
+--	[DESCRIPTION] [nvarchar](30) NULL,
+--	[PRCNT] [smallint] NULL,
+--	[TOTAL] [int] NULL,
+--	[THRESHOLD] [int] NULL,
+--	[DOWN] [int] NULL,
+--	[OBJECT_LINK] [int] NULL,
+--	[THRESHOLD_PERCENT] [smallint] NULL,
+--	[TENANT_ID] [numeric](19, 0) NOT NULL,
+--	[DELETED] [char](1) NOT NULL,
+--	[VERSION] [int] NOT NULL,
+-- CONSTRAINT [pk_DATA_LINE_Test] PRIMARY KEY CLUSTERED 
+--(
+--	[LINK] ASC
+--)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, FILLFACTOR = 90) ON [PRIMARY]
+--) ON [PRIMARY]
+--GO
 
-ALTER TABLE [VISION].[DATA_LINE_Test] ADD  DEFAULT ((0)) FOR [TENANT_ID]
-GO
+--ALTER TABLE [VISION].[DATA_LINE_Test] ADD  DEFAULT ((0)) FOR [TENANT_ID]
+--GO
 
-ALTER TABLE [VISION].[DATA_LINE_Test] ADD  DEFAULT ('N') FOR [DELETED]
-GO
+--ALTER TABLE [VISION].[DATA_LINE_Test] ADD  DEFAULT ('N') FOR [DELETED]
+--GO
 
-ALTER TABLE [VISION].[DATA_LINE_Test] ADD  DEFAULT ((1)) FOR [VERSION]
-GO
+--ALTER TABLE [VISION].[DATA_LINE_Test] ADD  DEFAULT ((1)) FOR [VERSION]
+--GO
 
-ALTER TABLE [VISION].[DATA_LINE_Test]  WITH NOCHECK ADD  CONSTRAINT [FK_DATA_LINE_Test_TENANT_ID] FOREIGN KEY([TENANT_ID])
-REFERENCES [VISION].[SECURITY_TENANT] ([id])
-GO
+--ALTER TABLE [VISION].[DATA_LINE_Test]  WITH NOCHECK ADD  CONSTRAINT [FK_DATA_LINE_Test_TENANT_ID] FOREIGN KEY([TENANT_ID])
+--REFERENCES [VISION].[SECURITY_TENANT] ([id])
+--GO
 
-ALTER TABLE [VISION].[DATA_LINE_Test] CHECK CONSTRAINT [FK_DATA_LINE_Test_TENANT_ID]
-GO
-
-
+--ALTER TABLE [VISION].[DATA_LINE_Test] CHECK CONSTRAINT [FK_DATA_LINE_Test_TENANT_ID]
+--GO
 
 
-----------------------------------------------------------
+
+
+------------------------------------------------------------
 
 
 DROP Table IF Exists #SecurityT
@@ -109,7 +109,8 @@ Select
 ,[DELETED]
 ,[VERSION]
 from vision.DATA_LINE 
-where deleted = 'N';  --- EDIT this to Y or N based on Carissa Confirmation
+where Tenant_id = 0
+--where deleted = 'N';  --- EDIT this to Y or N based on Carissa Confirmation
 
 
 WHILE @RowCount <= @NumberRecords
@@ -121,7 +122,7 @@ FROM #SecurityT
 WHERE RowID = @RowCount
 
 
-Insert into Vision.DATA_LINE_test
+Insert into Vision.DATA_LINE
 ( 
 DESCRIPTION
 ,PRCNT
@@ -170,7 +171,7 @@ GO
 
 --  DELETE from Vision.DATA_LINE_test
 
---  Select count(*) from [VISION].[DATA_LINE_Test]
+----  Select count(*) from [VISION].[DATA_LINE_Test]
 
-Select * from [VISION].[DATA_LINE_Test]
-where TENANT_ID =1 
+--Select * from [VISION].[DATA_LINE_Test]
+--where TENANT_ID =1 

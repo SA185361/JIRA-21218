@@ -1,46 +1,46 @@
-USE [GLOBAL]
-GO
+--USE [GLOBAL]
+--GO
 
-/****** Object:  Table [VISION].[DISTRICT]    Script Date: 8/18/2021 7:40:55 AM ******/
-SET ANSI_NULLS ON
-GO
+--/****** Object:  Table [VISION].[DISTRICT]    Script Date: 8/18/2021 7:40:55 AM ******/
+--SET ANSI_NULLS ON
+--GO
 
-SET QUOTED_IDENTIFIER ON
-GO
+--SET QUOTED_IDENTIFIER ON
+--GO
 
-CREATE TABLE [VISION].[DISTRICT_Test](
-	[LINK] [int] NOT NULL Identity(40,1),
-	[DESCRIPTION] [nvarchar](100) NULL,
-	[PRCNT] [smallint] NULL,
-	[TENANT_ID] [numeric](19, 0) NOT NULL,
-	[DELETED] [char](1) NOT NULL,
-	--PREV Int Not Null,
-	[VERSION] [int] NOT NULL,
- CONSTRAINT [pk_DISTRICT_Test] PRIMARY KEY CLUSTERED 
-(
-	[LINK] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, FILLFACTOR = 90) ON [PRIMARY]
-) ON [PRIMARY]
-GO
+--CREATE TABLE [VISION].[DISTRICT_Test](
+--	[LINK] [int] NOT NULL Identity(40,1),
+--	[DESCRIPTION] [nvarchar](100) NULL,
+--	[PRCNT] [smallint] NULL,
+--	[TENANT_ID] [numeric](19, 0) NOT NULL,
+--	[DELETED] [char](1) NOT NULL,
+--	--PREV Int Not Null,
+--	[VERSION] [int] NOT NULL,
+-- CONSTRAINT [pk_DISTRICT_Test] PRIMARY KEY CLUSTERED 
+--(
+--	[LINK] ASC
+--)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, FILLFACTOR = 90) ON [PRIMARY]
+--) ON [PRIMARY]
+--GO
 
-ALTER TABLE [VISION].[DISTRICT_Test] ADD  DEFAULT ((0)) FOR [TENANT_ID]
-GO
+--ALTER TABLE [VISION].[DISTRICT_Test] ADD  DEFAULT ((0)) FOR [TENANT_ID]
+--GO
 
-ALTER TABLE [VISION].[DISTRICT_Test] ADD  DEFAULT ('N') FOR [DELETED]
-GO
+--ALTER TABLE [VISION].[DISTRICT_Test] ADD  DEFAULT ('N') FOR [DELETED]
+--GO
 
-ALTER TABLE [VISION].[DISTRICT_Test] ADD  DEFAULT ((1)) FOR [VERSION]
-GO
+--ALTER TABLE [VISION].[DISTRICT_Test] ADD  DEFAULT ((1)) FOR [VERSION]
+--GO
 
-ALTER TABLE [VISION].[DISTRICT_Test]  WITH NOCHECK ADD  CONSTRAINT [FK_DISTRICT_Test_TENANT_ID] FOREIGN KEY([TENANT_ID])
-REFERENCES [VISION].[SECURITY_TENANT] ([id])
-GO
+--ALTER TABLE [VISION].[DISTRICT_Test]  WITH NOCHECK ADD  CONSTRAINT [FK_DISTRICT_Test_TENANT_ID] FOREIGN KEY([TENANT_ID])
+--REFERENCES [VISION].[SECURITY_TENANT] ([id])
+--GO
 
-ALTER TABLE [VISION].[DISTRICT_Test] NOCHECK CONSTRAINT [FK_DISTRICT_Test_TENANT_ID]
-GO
+--ALTER TABLE [VISION].[DISTRICT_Test] NOCHECK CONSTRAINT [FK_DISTRICT_Test_TENANT_ID]
+--GO
 
 
-----------------------------------------------------------
+------------------------------------------------------------
 
 
 DROP Table IF Exists #SecurityT
@@ -83,7 +83,8 @@ DELETED ,
 --PREV,
 [VERSION] 
 from vision.DISTRICT 
-where deleted = 'N';  --- EDIT this to Y or N based on Carissa Confirmation
+where Tenant_id = 0
+--where deleted = 'N';  --- EDIT this to Y or N based on Carissa Confirmation
 
 
 WHILE @RowCount <= @NumberRecords
@@ -95,7 +96,7 @@ FROM #SecurityT
 WHERE RowID = @RowCount
 
 
-Insert into Vision.DISTRICT_test
+Insert into Vision.DISTRICT
 (
  DESCRIPTION
  , PRCNT
@@ -137,5 +138,5 @@ GO
 
 --  Select count(*) from [VISION].[DISTRICT_Test]
 
-Select * from [VISION].[DISTRICT_Test]
-where TENANT_ID =1 
+--Select * from [VISION].[DISTRICT_Test]
+--where TENANT_ID =1 
