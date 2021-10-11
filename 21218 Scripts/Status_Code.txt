@@ -1,0 +1,105 @@
+
+
+DROP Table IF Exists #STATUS_TABLE_H
+Drop table if exists #STATUS_CODE_Temp
+ 
+
+
+ 
+CREATE TABLE #STATUS_TABLE_H (
+ RowID_H int IDENTITY(1, 1),
+ [NAME] [nvarchar](300) NULl,
+ [LINK] [smallint]  NOT NULL
+)
+ 
+DECLARE @NumberRecords_H int, @RowCount_H int
+DECLARE @RID_H int, @Desc_H varchar(500), @link_H int
+ 
+
+INSERT INTO #STATUS_TABLE_H ([NAME],LINK)
+Select      
+             [NAME]
+            ,Link 
+From  vision.STATUS_TABLE
+WHERE LINK  IN (SELECT LINK FROM   vision.STATUS_TABLE WHERE TENANT_ID <> 0)
+order by LINK
+ 
+Set @NumberRecords_H = @@ROWCOUNT
+Set @RowCount_H = 1
+ 
+ 
+ 
+ Select * into #STATUS_CODE_Temp from vision. STATUS_CODE
+ 
+  While @RowCount_H <= @NumberRecords_H
+
+  Begin 
+ 
+  Select  
+   @link_H = link
+   ,@Desc_H = [Name]
+ from #STATUS_TABLE_H
+ where  RowID_H = @RowCount_H
+ order by LINK
+ 
+ print @link_h
+ print @desc_h 
+
+  Insert into vision. STATUS_CODE
+           (
+		    [NAME]
+           ,[STATUS_TABLE_LINK]
+           ,[ACTION_CODE_LINK]
+           ,[DESCRIPTION]
+           ,[PRIORITY]
+           ,[RESOLUTION_CODE_LINK]
+           ,[SEQUENCE_NUM]
+           ,[AND_FLAG]
+           ,[BYTE_PATTERN]
+           ,[FAULT_CODE]
+           ,[RESPONSIBILITY]
+           ,[COMPONENT_LINK]
+           ,[CIT_COMPONENT_LINK]
+           ,[REPORTING_DEVICE_LINK]
+           ,[HELP_PROCEDURE_LINK]
+           ,[VERSION]
+           ,[PROBLEM_CODE]
+           ,[MAINTENANCE_MODE_EXCEPTION]
+		   )
+  Select 
+            hl.[NAME]
+           ,@link_h
+           ,[ACTION_CODE_LINK]
+           ,[DESCRIPTION]
+           ,[PRIORITY]
+           ,[RESOLUTION_CODE_LINK]
+           ,[SEQUENCE_NUM]
+           ,[AND_FLAG]
+           ,[BYTE_PATTERN]
+           ,[FAULT_CODE]
+           ,[RESPONSIBILITY]
+           ,[COMPONENT_LINK]
+           ,[CIT_COMPONENT_LINK]
+           ,[REPORTING_DEVICE_LINK]
+           ,[HELP_PROCEDURE_LINK]
+           ,hl.[VERSION]
+           ,[PROBLEM_CODE]
+           ,[MAINTENANCE_MODE_EXCEPTION]
+  from #STATUS_CODE_Temp HL
+  Inner join vision.STATUS_TABLE H
+  on h.LINK = HL.STATUS_TABLE_LINK
+   Where h.NAME = @Desc_H
+
+ 
+  Set @RowCount_H = @RowCount_H +1
+  End
+ 
+
+ 
+ 
+
+
+
+
+
+

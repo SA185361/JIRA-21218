@@ -41,7 +41,8 @@ TENANT_ID,
 DELETED ,
 [VERSION] 
 from vision.Branch 
-where deleted = 'N';  --- EDIT this to Y or N based on Carissa Confirmation
+where Tenant_id = 0
+--where deleted = 'N';  --- EDIT this to Y or N based on Carissa Confirmation
 
 
 WHILE @RowCount <= @NumberRecords
@@ -53,7 +54,7 @@ FROM #SecurityT
 WHERE RowID = @RowCount
 
 
-Insert into Vision.Branch_test( DESCRIPTION, PRCNT, TENANT_ID, DELETED, VERSION)
+Insert into Vision.Branch( DESCRIPTION, PRCNT, TENANT_ID, DELETED, VERSION)
 Select 
 [DESCRIPTION],
 PRCNT,
@@ -72,16 +73,16 @@ Drop Table #Branch1
 GO
 
 
-DBCC CHECKIDENT('vision.Branch_Test')
+--DBCC CHECKIDENT('vision.Branch_Test')
 
-DBCC CHECKIDENT('vision.Branch_Test',reseed,1285)
-
-
+--DBCC CHECKIDENT('vision.Branch_Test',reseed,1285)
 
 
--- FINAL Total: 332568
 
 
-DELETE from Vision.Branch_test
+---- FINAL Total: 332568
 
-Select count(*) from [VISION].[BRANCH_Test]
+
+--DELETE from Vision.Branch_test
+
+--Select count(*) from [VISION].[BRANCH_Test]

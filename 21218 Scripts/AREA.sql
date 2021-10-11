@@ -33,8 +33,9 @@ PRCNT,
 TENANT_ID,
 DELETED ,
 [VERSION] 
-from vision.area 
-where deleted = 'N';  --- EDIT this to Y or N based on Carissa Confirmation
+from vision.area
+where Tenant_id = 0 
+--where deleted = 'N';  --- EDIT this to Y or N based on Carissa Confirmation
 
 
 --- Select * from #Area1
@@ -48,7 +49,7 @@ FROM #SecurityT
 WHERE RowID = @RowCount
 
 
-Insert into Vision.AREA_Test2 ( DESCRIPTION, PRCNT, TENANT_ID, DELETED, VERSION)
+Insert into Vision.AREA ( DESCRIPTION, PRCNT, TENANT_ID, DELETED, VERSION)
 Select 
 [DESCRIPTION],
 PRCNT,
@@ -65,9 +66,9 @@ Drop Table #Area1
 
 
 
-DBCC CHECKIDENT('vision.AREA_Test2')
+--DBCC CHECKIDENT('vision.AREA_Test2')
 
-DBCC CHECKIDENT('vision.AREA_Test2',reseed,3027)
+--DBCC CHECKIDENT('vision.AREA_Test2',reseed,3027)
 
 
 

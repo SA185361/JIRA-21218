@@ -1,40 +1,40 @@
-USE [GLOBAL]
-GO
+--USE [GLOBAL]
+--GO
 
-/****** Object:  Table [VISION].[CASSETTE]    Script Date: 8/19/2021 8:40:02 AM ******/
-SET ANSI_NULLS ON
-GO
+--/****** Object:  Table [VISION].[CASSETTE]    Script Date: 8/19/2021 8:40:02 AM ******/
+--SET ANSI_NULLS ON
+--GO
 
-SET QUOTED_IDENTIFIER ON
-GO
+--SET QUOTED_IDENTIFIER ON
+--GO
 
-CREATE TABLE [VISION].[CASSETTE_Test](
-	[DESCRIPTION] [varchar](255) NULL,
-	[VERSION] [int] NOT NULL,
-	[TENANT_ID] [int] NOT NULL,
-	[ID] [numeric](18, 0) IDENTITY(1,1) NOT NULL,
-	[CASSETTE_TYPE] [varchar](15) NOT NULL,
- CONSTRAINT [PK__CASSETTE_Test__3214EC273047D355] PRIMARY KEY CLUSTERED 
-(
-	[ID] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-) ON [PRIMARY]
-GO
+--CREATE TABLE [VISION].[CASSETTE_Test](
+--	[DESCRIPTION] [varchar](255) NULL,
+--	[VERSION] [int] NOT NULL,
+--	[TENANT_ID] [int] NOT NULL,
+--	[ID] [numeric](18, 0) IDENTITY(1,1) NOT NULL,
+--	[CASSETTE_TYPE] [varchar](15) NOT NULL,
+-- CONSTRAINT [PK__CASSETTE_Test__3214EC273047D355] PRIMARY KEY CLUSTERED 
+--(
+--	[ID] ASC
+--)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+--) ON [PRIMARY]
+--GO
 
-ALTER TABLE [VISION].[CASSETTE_Test] ADD  DEFAULT ((1)) FOR [VERSION]
-GO
+--ALTER TABLE [VISION].[CASSETTE_Test] ADD  DEFAULT ((1)) FOR [VERSION]
+--GO
 
-ALTER TABLE [VISION].[CASSETTE_Test] ADD  DEFAULT ((0)) FOR [TENANT_ID]
-GO
+--ALTER TABLE [VISION].[CASSETTE_Test] ADD  DEFAULT ((0)) FOR [TENANT_ID]
+--GO
 
-ALTER TABLE [VISION].[CASSETTE_Test] ADD  DEFAULT ('LEGACY') FOR [CASSETTE_Test_TYPE]
-GO
-
-
+--ALTER TABLE [VISION].[CASSETTE_Test] ADD  DEFAULT ('LEGACY') FOR [CASSETTE_Test_TYPE]
+--GO
 
 
 
-----------------------------------------------------------
+
+
+------------------------------------------------------------
 
 
 DROP Table IF Exists #SecurityT
@@ -79,6 +79,7 @@ Select
            ,[TENANT_ID]
            ,[CASSETTE_TYPE]
 from vision.CASSETTE 
+where Tenant_id = 0
 -- where deleted = 'N';  --- EDIT this to Y or N based on Carissa Confirmation
 
 
@@ -91,7 +92,7 @@ FROM #SecurityT
 WHERE RowID = @RowCount
 
 
-Insert into Vision.CASSETTE_test
+Insert into Vision.CASSETTE
 (
  
           [DESCRIPTION]
@@ -131,5 +132,5 @@ GO
 
 --  Select count(*) from [VISION].[CASSETTE_Test]
 
-Select * from [VISION].[CASSETTE_Test]
-where TENANT_ID =1 
+--Select * from [VISION].[CASSETTE_Test]
+--where TENANT_ID =1 
