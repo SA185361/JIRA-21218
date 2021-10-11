@@ -1,0 +1,84 @@
+
+
+
+DROP Table IF Exists #CONTACT_H
+Drop table if exists #CONTACT_DISPATCH_Temp 
+ 
+
+
+ 
+CREATE TABLE #CONTACT_H (
+ RowID_H int IDENTITY(1, 1),
+ [NAME] [nvarchar](300) NULl,
+ [LINK] [smallint]  NOT NULL
+)
+ 
+DECLARE @NumberRecords_H int, @RowCount_H int
+DECLARE @RID_H int, @Desc_H varchar(500), @link_H int
+ 
+
+INSERT INTO #CONTACT_H ([NAME],LINK)
+Select      
+             [NAME]
+            ,Link 
+From  vision.CONTACT
+WHERE LINK  IN (SELECT LINK FROM   vision.CONTACT WHERE TENANT_ID <> 0)
+order by LINK
+ 
+Set @NumberRecords_H = @@ROWCOUNT
+Set @RowCount_H = 1
+ 
+ 
+ 
+ Select * into #CONTACT_DISPATCH_Temp from [VISION].[CONTACT_DISPATCH]
+ 
+  While @RowCount_H <= @NumberRecords_H
+
+  Begin 
+ 
+  Select  
+   @link_H = link
+   ,@Desc_H = [Name]
+ from #CONTACT_H
+ where  RowID_H = @RowCount_H
+ order by LINK
+ 
+ print @link_h
+ print @desc_h 
+
+  Insert into [VISION].[CONTACT_DISPATCH]
+           (
+		  [CONTACT_KEY]
+           ,[INSTANCE]
+           ,[DAY_LIST_KEY]
+           ,[START_MINUTE]
+           ,[END_MINUTE]
+		   		  	   )
+  Select 
+
+              @link_H
+           ,[INSTANCE]
+           ,[DAY_LIST_KEY]
+           ,[START_MINUTE]
+           ,[END_MINUTE]
+         
+			
+	
+  from #CONTACT_DISPATCH_Temp HL
+  Inner join vision.CONTACT H
+  on h.LINK = HL.CONTACT_KEY
+   Where h.NAME = @Desc_H
+
+ 
+  Set @RowCount_H = @RowCount_H +1
+  End
+ 
+
+ 
+ 
+
+
+
+
+
+
