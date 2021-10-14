@@ -1,4 +1,6 @@
 
+
+
 CREATE TABLE #SecurityT (
  RowID int IDENTITY(1, 1),
   ID int,
@@ -35,10 +37,26 @@ DELETED ,
 [VERSION] 
 from vision.area
 where Tenant_id = 0 
---where deleted = 'N';  --- EDIT this to Y or N based on Carissa Confirmation
+and deleted = 'N';  --- EDIT this to Y or N based on Carissa Confirmation
 
 
---- Select * from #Area1
+DECLARE @sql varchar(8000);
+Declare @LINK int;
+Select @LINK = max(link) + 1 from  vision.Area
+print @LINK
+
+SET @sql = '
+CREATE TABLE vision.##Area2(
+	[LINK] [int] Identity (' + CAST(@link AS varchar(15)) + ',1) NOT NULL,
+   	[DESCRIPTION] [nvarchar](30) NULL,
+	[PRCNT] [int] NULL,
+	[TENANT_ID] [numeric](19, 0) NOT NULL,
+	[DELETED] [char](1) NOT NULL,
+	[VERSION] [int] NOT NULL)
+
+	';
+
+EXEC (@sql);
 
 WHILE @RowCount <= @NumberRecords
 
@@ -49,7 +67,7 @@ FROM #SecurityT
 WHERE RowID = @RowCount
 
 
-Insert into Vision.AREA ( DESCRIPTION, PRCNT, TENANT_ID, DELETED, VERSION)
+Insert into vision.##Area2 ( DESCRIPTION, PRCNT, TENANT_ID, DELETED, VERSION)
 Select 
 [DESCRIPTION],
 PRCNT,
@@ -61,14 +79,87 @@ from  #Area1
 SET @RowCount = @RowCount + 1
 END
 
+Select * from vision.##Area2
+
 DROP TABLE #SecurityT
 Drop Table #Area1 
+DROP Table if exists vision.##Area2
 
 
 
 --DBCC CHECKIDENT('vision.AREA_Test2')
 
 --DBCC CHECKIDENT('vision.AREA_Test2',reseed,3027)
+
+
+
+
+Select * from vision.area
+
+use [PUT_UR_DB_NAME_HERE]
+
+DECLARE @REPLICATION_SQL_SERVER_DATABASE_NAME VARCHAR(1000)
+DECLARE @REPLICATION_SQL_SERVER_SCHEMA_NAME VARCHAR(500)
+DECLARE @REPLICATION_SQL_SERVER_TABLE_NAME VARCHAR(500)
+
+SET @REPLICATION_SQL_SERVER_DATABASE_NAME = 'PUT_UR_DB_NAME_HERE' --<$(varCOMMONDB)> -- USE SQL SERVER DATABSE NAME HERE
+SET @REPLICATION_SQL_SERVER_SCHEMA_NAME = 'Vision' -- USE SQL SERVER DB SCHEMA NAME HERE
+SET @REPLICATION_SQL_SERVER_TABLE_NAME = 'PUT_UR_FINAL_SOURCE_TABLE_NAME_HERE'
+
+
+/* **************************************************************************************** */
+/* ******************* SCRIPT RUN FOR TABLE AREA ********************* */
+/* **************************************************************************************** */
+
+BEGIN TRY
+	BEGIN TRANSACTION INSERT_AREA
+	ALTER TABLE VISION.AREA NOCHECK CONSTRAINT ALL /* DISABLE ALL TABLE CONSTRAINTS */
+	BEGIN /* INSERTING RECORD */
+		DECLARE @SQL_INSERT_AREA VARCHAR(MAX)
+		SET @SQL_INSERT_AREA = '
+		BEGIN
+		DECLARE
+			@LINK int ,
+			@DESCRIPTION varchar(30) ,
+			@PRCNT smallint ,
+			@TENANT_ID INT,
+			@DELETED char(1) ,
+			@VERSION int
+
+			DECLARE insert_cursor CURSOR FOR
+			SELECT LINK,DESCRIPTION,PRCNT,TENANT_ID,DELETED,VERSION
+			FROM '+ @REPLICATION_SQL_SERVER_DATABASE_NAME + '.' + @REPLICATION_SQL_SERVER_SCHEMA_NAME + '.' + @REPLICATION_SQL_SERVER_TABLE_NAME + '
+			OPEN insert_cursor
+			FETCH NEXT FROM insert_cursor into @LINK,@DESCRIPTION,@PRCNT,@TENANT_ID,@DELETED,@VERSION
+
+			WHILE @@FETCH_STATUS=0
+			BEGIN
+					BEGIN
+						INSERT INTO '+ @REPLICATION_SQL_SERVER_DATABASE_NAME + '.' + @REPLICATION_SQL_SERVER_SCHEMA_NAME + '.AREA ( LINK ,DESCRIPTION,PRCNT,TENANT_ID,DELETED,VERSION )
+						SELECT @LINK ,@DESCRIPTION,@PRCNT,@TENANT_ID,@DELETED,@VERSION
+					END
+				FETCH NEXT FROM insert_cursor into @LINK,@DESCRIPTION,@PRCNT,@TENANT_ID,@DELETED,@VERSION
+			END
+			CLOSE insert_cursoR
+			Deallocate insert_cursor
+		END'
+EXEC (@SQL_INSERT_AREA)
+--select @SQL_INSERT_AREA
+
+ALTER TABLE VISION.AREA CHECK CONSTRAINT ALL /* Enable all table constraints */
+END
+
+COMMIT TRANSACTION INSERT_AREA
+SELECT 'TRANSACTION HAS BEEN RUN SUCCESSFULLY FOR INSERT_AREA' AS TRANSACTION_STATUS
+END TRY
+BEGIN CATCH
+-- Transaction uncommittable
+IF @@TRANCOUNT > 0
+ROLLBACK TRANSACTION INSERT_AREA
+SELECT 'TRANSACTION HAS BEEN FAIL FOR INSERT_AREA' AS TRANSACTION_STATUS , ERROR_MESSAGE() 'ERROR_MESSAGE'
+END CATCH
+
+
 
 
 

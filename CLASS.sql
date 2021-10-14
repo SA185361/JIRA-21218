@@ -1,47 +1,4 @@
 
---USE [GLOBAL]
---GO
-
---/****** Object:  Table [VISION].[CLASS]    Script Date: 8/18/2021 7:40:55 AM ******/
---SET ANSI_NULLS ON
---GO
-
---SET QUOTED_IDENTIFIER ON
---GO
-
---CREATE TABLE [VISION].[CLASS_Test](
---	[LINK] [int] NOT NULL Identity(17,1),
---	[DESCRIPTION] [nvarchar](30) NULL,
---	[PRCNT] [smallint] NULL,
---	[TENANT_ID] [numeric](19, 0) NOT NULL,
---	[DELETED] [char](1) NOT NULL,
---	[VERSION] [int] NOT NULL,
--- CONSTRAINT [pk_CLASS_Test] PRIMARY KEY CLUSTERED 
---(
---	[LINK] ASC
---)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, FILLFACTOR = 90) ON [PRIMARY]
---) ON [PRIMARY]
---GO
-
---ALTER TABLE [VISION].[CLASS_Test] ADD  DEFAULT ((0)) FOR [TENANT_ID]
---GO
-
---ALTER TABLE [VISION].[CLASS_Test] ADD  DEFAULT ('N') FOR [DELETED]
---GO
-
---ALTER TABLE [VISION].[CLASS_Test] ADD  DEFAULT ((1)) FOR [VERSION]
---GO
-
---ALTER TABLE [VISION].[CLASS_Test]  WITH NOCHECK ADD  CONSTRAINT [FK_CLASS_Test_TENANT_ID] FOREIGN KEY([TENANT_ID])
---REFERENCES [VISION].[SECURITY_TENANT] ([id])
---GO
-
---ALTER TABLE [VISION].[CLASS_Test] NOCHECK CONSTRAINT [FK_CLASS_Test_TENANT_ID]
---GO
-
-
------------------------------------------------------------------
-
 
 
 
@@ -49,6 +6,7 @@
 
 DROP Table IF Exists #SecurityT
 DROP Table IF Exists #CLASS1
+DROP Table if exists vision.##CLASS2
 
 CREATE TABLE #SecurityT (
  RowID int IDENTITY(1, 1),
@@ -85,8 +43,29 @@ TENANT_ID,
 DELETED ,
 [VERSION] 
 from vision.CLASS 
-where deleted = 'N';  --- EDIT this to Y or N based on Carissa Confirmation
 where Tenant_id = 0
+and deleted = 'N';  --- EDIT this to Y or N based on Carissa Confirmation
+
+
+DECLARE @sql varchar(8000);
+Declare @LINK int;
+Select @LINK = max(link) + 1 from  vision.CLASS
+print @LINK
+
+SET @sql = '
+CREATE TABLE vision.##CLASS2(
+	[LINK] [int] Identity (' + CAST(@link AS varchar(15)) + ',1) NOT NULL,
+    	[DESCRIPTION] [nvarchar](30) NULL,
+	[PRCNT] [int] NULL,
+	[TENANT_ID] [numeric](19, 0) NOT NULL,
+	[DELETED] [char](1) NOT NULL,
+	[VERSION] [int] NOT NULL)
+
+	';
+
+EXEC (@sql);
+
+
 
 WHILE @RowCount <= @NumberRecords
 
@@ -97,7 +76,7 @@ FROM #SecurityT
 WHERE RowID = @RowCount
 
 
-Insert into Vision.CLASS( DESCRIPTION, PRCNT, TENANT_ID, DELETED, VERSION)
+Insert into  vision.##CLASS2( DESCRIPTION, PRCNT, TENANT_ID, DELETED, VERSION)
 Select 
 [DESCRIPTION],
 PRCNT,
@@ -109,8 +88,11 @@ from  #CLASS1
 SET @RowCount = @RowCount + 1
 END
 
+Select * from vision.##CLASS2
+
 DROP TABLE #SecurityT
 Drop Table #CLASS1 
+DROP Table if exists vision.##CLASS2
 
 
 GO
@@ -128,3 +110,72 @@ GO
 --DELETE from Vision.CLASS_test
 
 --Select * from [VISION].[CLASS_Test]
+
+use [PUT_UR_DB_NAME_HERE]
+
+DECLARE @REPLICATION_SQL_SERVER_DATABASE_NAME VARCHAR(1000)
+DECLARE @REPLICATION_SQL_SERVER_SCHEMA_NAME VARCHAR(500)
+DECLARE @REPLICATION_SQL_SERVER_TABLE_NAME VARCHAR(500)
+
+SET @REPLICATION_SQL_SERVER_DATABASE_NAME = 'PUT_UR_DB_NAME_HERE' --<$(varCOMMONDB)> -- USE SQL SERVER DATABSE NAME HERE
+SET @REPLICATION_SQL_SERVER_SCHEMA_NAME = 'Vision' -- USE SQL SERVER DB SCHEMA NAME HERE
+SET @REPLICATION_SQL_SERVER_TABLE_NAME = 'PUT_UR_FINAL_SOURCE_TABLE_NAME_HERE'
+
+
+/* **************************************************************************************** */
+/* ******************* SCRIPT RUN FOR TABLE CLASS ********************* */
+/* **************************************************************************************** */
+
+BEGIN TRY
+	BEGIN TRANSACTION INSERT_CLASS
+	ALTER TABLE VISION.CLASS NOCHECK CONSTRAINT ALL /* DISABLE ALL TABLE CONSTRAINTS */
+	BEGIN /* INSERTING RECORD */
+		DECLARE @SQL_INSERT_CLASS VARCHAR(MAX)
+		SET @SQL_INSERT_CLASS = '
+		BEGIN
+		DECLARE
+			@LINK int ,
+			@DESCRIPTION varchar(30) ,
+			@PRCNT smallint ,
+			@TENANT_ID INT,
+			@DELETED char(1) ,
+			@VERSION int
+
+			DECLARE insert_cursor CURSOR FOR
+			SELECT LINK,DESCRIPTION,PRCNT,TENANT_ID,DELETED,VERSION
+			FROM '+ @REPLICATION_SQL_SERVER_DATABASE_NAME + '.' + @REPLICATION_SQL_SERVER_SCHEMA_NAME + '.' + @REPLICATION_SQL_SERVER_TABLE_NAME + '
+			OPEN insert_cursor
+			FETCH NEXT FROM insert_cursor into @LINK,@DESCRIPTION,@PRCNT,@TENANT_ID,@DELETED,@VERSION
+
+			WHILE @@FETCH_STATUS=0
+			BEGIN
+					BEGIN
+						INSERT INTO '+ @REPLICATION_SQL_SERVER_DATABASE_NAME + '.' + @REPLICATION_SQL_SERVER_SCHEMA_NAME + '.CLASS ( LINK ,DESCRIPTION,PRCNT,TENANT_ID,DELETED,VERSION )
+						SELECT @LINK ,@DESCRIPTION,@PRCNT,@TENANT_ID,@DELETED,@VERSION
+					END
+				FETCH NEXT FROM insert_cursor into @LINK,@DESCRIPTION,@PRCNT,@TENANT_ID,@DELETED,@VERSION
+			END
+			CLOSE insert_cursoR
+			Deallocate insert_cursor
+		END'
+EXEC (@SQL_INSERT_CLASS)
+--select @SQL_INSERT_CLASS
+
+ALTER TABLE VISION.CLASS CHECK CONSTRAINT ALL /* Enable all table constraints */
+END
+
+COMMIT TRANSACTION INSERT_CLASS
+SELECT 'TRANSACTION HAS BEEN RUN SUCCESSFULLY FOR INSERT_CLASS' AS TRANSACTION_STATUS
+END TRY
+BEGIN CATCH
+-- Transaction uncommittable
+IF @@TRANCOUNT > 0
+ROLLBACK TRANSACTION INSERT_CLASS
+SELECT 'TRANSACTION HAS BEEN FAIL FOR INSERT_CLASS' AS TRANSACTION_STATUS , ERROR_MESSAGE() 'ERROR_MESSAGE'
+END CATCH
+
+
+
+
+
+
