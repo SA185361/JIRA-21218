@@ -1,72 +1,11 @@
---USE [GLOBAL]
---GO
 
---/****** Object:  Table [VISION].[PROTOCOL]    Script Date: 8/19/2021 4:45:10 AM ******/
---SET ANSI_NULLS ON
---GO
-
---SET QUOTED_IDENTIFIER ON
---GO
-
---CREATE TABLE [VISION].[PROTOCOL_Test](
---	[DESCRIPTION] [nvarchar](30) NULL,
---	[VERIFIED] [int] NULL,
---	[CONNECTION_GROUP_LINK] [smallint] NULL,
---	[NOTIFICATION_METHOD] [smallint] NULL,
---	[DISPATCHER_MENU] [smallint] NULL,
---	[DISPATCHER_SUBMENU] [smallint] NULL,
---	[WORKSTATION_MENU] [smallint] NULL,
---	[SPOKEN_TEXT] [char](70) NULL,
---	[LONG_TEXT] [text] NULL,
---	[TENANT_ID] [numeric](19, 0) NOT NULL,
---	[DELETED] [char](1) NOT NULL,
---	[OUTGOING_DIRECTORY] [nvarchar](180) NULL,
---	[INCOMING_DIRECTORY] [nvarchar](180) NULL,
---	[OUTGOING_TEMPLATE] [nvarchar](60) NULL,
---	[INCOMING_TEMPLATE] [nvarchar](60) NULL,
---	[CUSTOMER_CODE] [nvarchar](20) NULL,
---	[INCOMING_POLLING_INTERVAL] [numeric](3, 0) NULL,
---	[LINK] [smallint] IDENTITY(7,1) NOT NULL,
---	[IS_ABSOLUTE_PATH] [char](1) NOT NULL,
--- CONSTRAINT [pk_PROTOCOL_Test] PRIMARY KEY CLUSTERED 
---(
---	[LINK] ASC
---)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, FILLFACTOR = 90) ON [PRIMARY]
---) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
---GO
-
---ALTER TABLE [VISION].[PROTOCOL_Test] ADD  DEFAULT ((0)) FOR [TENANT_ID]
---GO
-
---ALTER TABLE [VISION].[PROTOCOL_Test] ADD  DEFAULT ('N') FOR [DELETED]
---GO
-
---ALTER TABLE [VISION].[PROTOCOL_Test] ADD  DEFAULT ((0)) FOR [INCOMING_POLLING_INTERVAL]
---GO
-
---ALTER TABLE [VISION].[PROTOCOL_Test] ADD  DEFAULT ('N') FOR [IS_ABSOLUTE_PATH]
---GO
-
---ALTER TABLE [VISION].[PROTOCOL_Test]  WITH NOCHECK ADD  CONSTRAINT [FK_PROTOCOL_Test_TENANT_ID] FOREIGN KEY([TENANT_ID])
---REFERENCES [VISION].[SECURITY_TENANT] ([id])
---GO
-
---ALTER TABLE [VISION].[PROTOCOL_Test] CHECK CONSTRAINT [FK_PROTOCOL_Test_TENANT_ID]
---GO
-
---ALTER TABLE [VISION].[PROTOCOL_Test]  WITH NOCHECK ADD  CONSTRAINT [CHK_PROTOCOL_Test_ABSOLUTE_PATH] CHECK  (([IS_ABSOLUTE_PATH]='N' OR [IS_ABSOLUTE_PATH]='Y'))
---GO
-
---ALTER TABLE [VISION].[PROTOCOL_Test] CHECK CONSTRAINT [CHK_PROTOCOL_Test_ABSOLUTE_PATH]
---GO
-
-
---------------------------------------------------------
 
 
 
 DROP Table IF Exists #SecurityT
 DROP Table IF Exists #PROTOCOL1
+DROP Table if exists vision.##PROTOCOL2
+
 
 CREATE TABLE #SecurityT (
  RowID int IDENTITY(1, 1),
@@ -131,7 +70,45 @@ Select
            ,[IS_ABSOLUTE_PATH]
 from vision.PROTOCOL 
 where Tenant_id = 0
---where deleted = 'N';  --- EDIT this to Y or N based on Carissa Confirmation
+and deleted = 'N';  --- EDIT this to Y or N based on Carissa Confirmation
+
+
+
+DECLARE @sql varchar(8000);
+Declare @LINK int;
+Select @LINK = max(link) + 1 from  vision.PROTOCOL 
+print @LINK
+
+SET @sql = '
+CREATE TABLE vision.##PROTOCOL2(
+	[LINK] [int] Identity (' + CAST(@link AS varchar(15)) + ',1) NOT NULL,
+    [DESCRIPTION] [nvarchar](30) NULL,
+	[VERIFIED] [int] NULL,
+	[CONNECTION_GROUP_LINK] [smallint] NULL,
+	[NOTIFICATION_METHOD] [smallint] NULL,
+	[DISPATCHER_MENU] [smallint] NULL,
+	[DISPATCHER_SUBMENU] [smallint] NULL,
+	[WORKSTATION_MENU] [smallint] NULL,
+	[SPOKEN_TEXT] [char](70) NULL,
+	[LONG_TEXT] [text] NULL,
+	[TENANT_ID] [numeric](19, 0) NOT NULL,
+	[DELETED] [char](1) NOT NULL,
+	[OUTGOING_DIRECTORY] [nvarchar](180) NULL,
+	[INCOMING_DIRECTORY] [nvarchar](180) NULL,
+	[OUTGOING_TEMPLATE] [nvarchar](60) NULL,
+	[INCOMING_TEMPLATE] [nvarchar](60) NULL,
+	[CUSTOMER_CODE] [nvarchar](20) NULL,
+	[INCOMING_POLLING_INTERVAL] [numeric](3, 0) NULL,
+	[IS_ABSOLUTE_PATH] [char](1) NOT NULL)
+
+	';
+
+EXEC (@sql);
+
+
+
+
+
 
 
 WHILE @RowCount <= @NumberRecords
@@ -143,7 +120,7 @@ FROM #SecurityT
 WHERE RowID = @RowCount
 
 
-Insert into Vision.PROTOCOL
+Insert into vision.##PROTOCOL2
 (
  [DESCRIPTION]
 ,[VERIFIED]
@@ -193,6 +170,9 @@ Drop Table #PROTOCOL1
 
 
 GO
+
+
+select * from vision.##PROTOCOL2
 
 -- Select * from [VISION].[PROTOCOL]
 
