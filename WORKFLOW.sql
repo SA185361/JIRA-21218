@@ -1,55 +1,9 @@
---USE [GLOBAL]
---GO
-
---/****** Object:  Table [VISION].[WORKFLOW]    Script Date: 8/30/2021 11:46:23 AM ******/
---SET ANSI_NULLS ON
---GO
-
---SET QUOTED_IDENTIFIER ON
---GO
-
---CREATE TABLE [VISION].[WORKFLOW_Test](
---	[DESCRIPTION] [nvarchar](200) NULL,
---	[PROCESS_ID] [varchar](50) NOT NULL,
---	[CODE] [nvarchar](max) NULL,
---	[CREATED_DATE] [datetime] NULL,
---	[CREATED_BY] [varchar](50) NULL,
---	[MODIFIED_DATE] [datetime] NULL,
---	[MODIFIED_BY] [varchar](50) NULL,
---	[DELETED] [char](1) NOT NULL,
---	[TENANT_ID] [numeric](19, 0) NULL,
---	[VERSION] [int] NOT NULL,
---	[WORKFLOW_ID] [numeric](5, 0) IDENTITY(1,1) NOT FOR REPLICATION NOT NULL,
--- CONSTRAINT [PK_WORKFLOW_Test_ID] PRIMARY KEY CLUSTERED 
---(
---	[WORKFLOW_ID] ASC
---)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
---) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
---GO
-
---ALTER TABLE [VISION].[WORKFLOW_Test] ADD  DEFAULT ('N') FOR [DELETED]
---GO
-
---ALTER TABLE [VISION].[WORKFLOW_Test] ADD  DEFAULT ((1)) FOR [VERSION]
---GO
-
---ALTER TABLE [VISION].[WORKFLOW_Test]  WITH CHECK ADD  CONSTRAINT [FK_WORKFLOW_Test_TENANT_ID] FOREIGN KEY([TENANT_ID])
---REFERENCES [VISION].[SECURITY_TENANT] ([id])
---GO
-
---ALTER TABLE [VISION].[WORKFLOW_Test] CHECK CONSTRAINT [FK_WORKFLOW_Test_TENANT_ID]
---GO
-
-
-
-
-
-
-------------------------------------------------------------
-
 
 DROP Table IF Exists #SecurityT
 DROP Table IF Exists #WORKFLOW1
+
+
+
 
 CREATE TABLE #SecurityT (
  RowID int IDENTITY(1, 1),
@@ -71,8 +25,7 @@ SET @RowCount = 1
 
 Create Table #WORKFLOW1 
 (
-   	
-	[DESCRIPTION] [nvarchar](200) NULL,
+   	[DESCRIPTION] [nvarchar](200) NULL,
 	[PROCESS_ID] [varchar](50) NOT NULL,
 	[CODE] [nvarchar](max) NULL,
 	[CREATED_DATE] [datetime] NULL,
@@ -81,7 +34,7 @@ Create Table #WORKFLOW1
 	[MODIFIED_BY] [varchar](50) NULL,
 	[DELETED] [char](1) NOT NULL,
 	[TENANT_ID] [numeric](19, 0) NULL,
-	[VERSION] [int] NOT NULL,)
+	[VERSION] [int] NOT NULL)
 
 
 Insert into #WORKFLOW1 
@@ -96,7 +49,6 @@ Insert into #WORKFLOW1
            ,[TENANT_ID]
            ,[VERSION] )
 Select 
-
             [DESCRIPTION]
            ,[PROCESS_ID]
            ,[CODE]
@@ -109,7 +61,7 @@ Select
            ,[VERSION]
 from vision.WORKFLOW 
 where Tenant_id = 0
---where deleted = 'N';  --- EDIT this to Y or N based on Carissa Confirmation
+and deleted = 'N';  --- EDIT this to Y or N based on Carissa Confirmation
 
 
 WHILE @RowCount <= @NumberRecords
@@ -152,8 +104,8 @@ END
 DROP TABLE #SecurityT
 Drop Table #WORKFLOW1 
 
-
 GO
+
 
 -- Select * from [VISION].[WORKFLOW]
 
