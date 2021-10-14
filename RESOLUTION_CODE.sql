@@ -1,39 +1,8 @@
---USE [GLOBAL]
---GO
-
---/****** Object:  Table [VISION].[RESOLUTION_CODE]    Script Date: 8/19/2021 7:55:16 AM ******/
---SET ANSI_NULLS ON
---GO
-
---SET QUOTED_IDENTIFIER ON
---GO
-
---CREATE TABLE [VISION].[RESOLUTION_CODE_Test](
---	[LINK] [smallint] NOT NULL IDENTITY (67,1),
---	[DESCRIPTION] [nvarchar](60) NULL,
---	[NAME] [varchar](30) NOT NULL,
---	[VERSION] [int] NOT NULL,
--- CONSTRAINT [pk_RESOLUTION_CODE_Test] PRIMARY KEY CLUSTERED 
---(
---	[LINK] ASC
---)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, FILLFACTOR = 90) ON [PRIMARY],
--- CONSTRAINT [UK_RESOLUTION_NAME] UNIQUE NONCLUSTERED 
---(
---	[NAME] ASC
---)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
---) ON [PRIMARY]
---GO
-
---ALTER TABLE [VISION].[RESOLUTION_CODE_Test] ADD  DEFAULT ((1)) FOR [VERSION]
---GO
-
-
-
-------------------------------------------------------------
-
 
 DROP Table IF Exists #SecurityT
 DROP Table IF Exists #RESOLUTION_CODE1
+DROP Table if exists vision.##RESOLUTION_CODE2
+
 
 CREATE TABLE #SecurityT (
  RowID int IDENTITY(1, 1),
@@ -57,7 +26,7 @@ Create Table #RESOLUTION_CODE1
 (
    	[DESCRIPTION] [nvarchar](60) NULL,
 	[NAME] [varchar](30) NOT NULL,
-	[VERSION] [int] NOT NULL,)
+	[VERSION] [int] NOT NULL)
 
 
 Insert into #RESOLUTION_CODE1 
@@ -66,8 +35,27 @@ Select
            ,[NAME]
            ,[VERSION]
 from vision.RESOLUTION_CODE 
-Tenant_id = 0
---where deleted = 'N';  --- EDIT this to Y or N based on Carissa Confirmation
+where Tenant_id = 0
+--and deleted = 'N';  --- EDIT this to Y or N based on Carissa Confirmation
+
+
+DECLARE @sql varchar(8000);
+Declare @LINK int;
+Select @LINK = max(link) + 1 from  vision.RESOLUTION_CODE 
+print @LINK
+
+SET @sql = '
+CREATE TABLE vision.##RESOLUTION_CODE2(
+	[LINK] [int] Identity (' + CAST(@link AS varchar(15)) + ',1) NOT NULL,
+    	[DESCRIPTION] [nvarchar](60) NULL,
+	[NAME] [varchar](30) NOT NULL,
+	[VERSION] [int] NOT NULL)
+
+	';
+
+EXEC (@sql);
+
+
 
 
 WHILE @RowCount <= @NumberRecords
@@ -79,7 +67,7 @@ FROM #SecurityT
 WHERE RowID = @RowCount
 
 
-Insert into Vision.RESOLUTION_CODE
+Insert into Vision.##RESOLUTION_CODE2
 (
 [DESCRIPTION]
            ,[NAME]
@@ -92,6 +80,9 @@ from  #RESOLUTION_CODE1
 
 SET @RowCount = @RowCount + 1
 END
+
+
+select * from Vision.##RESOLUTION_CODE2
 
 DROP TABLE #SecurityT
 Drop Table #RESOLUTION_CODE1 
