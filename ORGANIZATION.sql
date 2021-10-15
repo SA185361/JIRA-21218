@@ -1,51 +1,10 @@
---USE [GLOBAL]
---GO
 
-
---/****** Object:  Table [VISION].[ORGANIZATION]    Script Date: 8/18/2021 7:40:55 AM ******/
---SET ANSI_NULLS ON
---GO
-
---SET QUOTED_IDENTIFIER ON
---GO
-
---CREATE TABLE [VISION].[ORGANIZATION_Test](
---	[LINK] [int] NOT NULL Identity(1169,1),
---	[DESCRIPTION] [nvarchar](100) NULL,
---	[PRCNT] [smallint] NULL,
---	[TENANT_ID] [numeric](19, 0) NOT NULL,
---	[DELETED] [char](1) NOT NULL,
---	--PREV Int Not Null,
---	[VERSION] [int] NOT NULL,
--- CONSTRAINT [pk_ORGANIZATION_Test] PRIMARY KEY CLUSTERED 
---(
---	[LINK] ASC
---)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, FILLFACTOR = 90) ON [PRIMARY]
---) ON [PRIMARY]
---GO
-
---ALTER TABLE [VISION].[ORGANIZATION_Test] ADD  DEFAULT ((0)) FOR [TENANT_ID]
---GO
-
---ALTER TABLE [VISION].[ORGANIZATION_Test] ADD  DEFAULT ('N') FOR [DELETED]
---GO
-
---ALTER TABLE [VISION].[ORGANIZATION_Test] ADD  DEFAULT ((1)) FOR [VERSION]
---GO
-
---ALTER TABLE [VISION].[ORGANIZATION_Test]  WITH NOCHECK ADD  CONSTRAINT [FK_ORGANIZATION_Test_TENANT_ID] FOREIGN KEY([TENANT_ID])
---REFERENCES [VISION].[SECURITY_TENANT] ([id])
---GO
-
---ALTER TABLE [VISION].[ORGANIZATION_Test] NOCHECK CONSTRAINT [FK_ORGANIZATION_Test_TENANT_ID]
---GO
-
-
-------------------------------------------------------------
 
 
 DROP Table IF Exists #SecurityT
 DROP Table IF Exists #ORGANIZATION1
+DROP Table IF Exists vision.##ORGANIZATION2
+
 
 CREATE TABLE #SecurityT (
  RowID int IDENTITY(1, 1),
@@ -85,8 +44,28 @@ DELETED ,
 [VERSION] 
 from vision.ORGANIZATION 
 where Tenant_id = 0
---where deleted = 'N';  --- EDIT this to Y or N based on Carissa Confirmation
+and deleted = 'N';  --- EDIT this to Y or N based on Carissa Confirmation
 
+
+
+DECLARE @sql varchar(8000);
+Declare @LINK int;
+Select @LINK = max(link) + 1 from  vision.ORGANIZATION 
+print @LINK
+
+SET @sql = '
+CREATE TABLE vision.##ORGANIZATION2(
+	[LINK] [int] Identity (' + CAST(@link AS varchar(15)) + ',1) NOT NULL,
+   [DESCRIPTION] [nvarchar](100) NULL,
+	[PRCNT] [int] NULL,
+	[TENANT_ID] [numeric](19, 0) NOT NULL,
+	[DELETED] [char](1) NOT NULL,
+	--PREV int not null,
+	[VERSION] [int] NOT NULL)
+
+	';
+
+EXEC (@sql);
 
 WHILE @RowCount <= @NumberRecords
 
@@ -97,7 +76,7 @@ FROM #SecurityT
 WHERE RowID = @RowCount
 
 
-Insert into Vision.ORGANIZATION
+Insert into vision.##ORGANIZATION2
 (
  DESCRIPTION
  , PRCNT
@@ -117,6 +96,8 @@ from  #ORGANIZATION1
 SET @RowCount = @RowCount + 1
 END
 
+Select * from vision.##ORGANIZATION2
+ 
 DROP TABLE #SecurityT
 Drop Table #ORGANIZATION1 
 
