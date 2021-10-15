@@ -1,48 +1,8 @@
---USE [GLOBAL]
---GO
-
---/****** Object:  Table [VISION].[LINK_THRESHOLD_GROUP]    Script Date: 8/18/2021 11:25:29 AM ******/
---SET ANSI_NULLS ON
---GO
-
---SET QUOTED_IDENTIFIER ON
---GO
-
---CREATE TABLE [VISION].[LINK_THRESHOLD_GROUP_TEST](
---	[LINK] [smallint] NOT NULL,
---	[DESCRIPTION] [char](30) NOT NULL,
---	[THRESH_TYPE] [smallint] NULL,
---	[EXCEPTIONDAY_1] [smallint] NULL,
---	[EXCEPTIONDAY_2] [smallint] NULL,
---	[TENANT_ID] [numeric](19, 0) NOT NULL,
---	[DELETED] [char](1) NOT NULL,
--- CONSTRAINT [pk_LINK_THRESHOLD_GROUP_TEST] PRIMARY KEY CLUSTERED 
---(
---	[LINK] ASC
---)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, FILLFACTOR = 90) ON [PRIMARY]
---) ON [PRIMARY]
---GO
-
---ALTER TABLE [VISION].[LINK_THRESHOLD_GROUP_TEST] ADD  DEFAULT ((0)) FOR [TENANT_ID]
---GO
-
---ALTER TABLE [VISION].[LINK_THRESHOLD_GROUP_TEST] ADD  DEFAULT ('N') FOR [DELETED]
---GO
-
---ALTER TABLE [VISION].[LINK_THRESHOLD_GROUP_TEST]  WITH CHECK ADD  CONSTRAINT [FK_LINK_THRES_GROUP_TENANT_ID] FOREIGN KEY([TENANT_ID])
---REFERENCES [VISION].[SECURITY_TENANT] ([id])
---GO
-
---ALTER TABLE [VISION].[LINK_THRESHOLD_GROUP_TEST] CHECK CONSTRAINT [FK_LINK_THRES_GROUP_TENANT_ID]
---GO
-
-
-
-------------------------------------------------------------
 
 
 DROP Table IF Exists #SecurityT
 DROP Table IF Exists #LINK_THRESHOLD_GROUP1
+DROP Table if exists vision.##LINK_THRESHOLD_GROUP2
 
 CREATE TABLE #SecurityT (
  RowID int IDENTITY(1, 1),
@@ -82,8 +42,28 @@ Select
 ,[DELETED]
 from vision.LINK_THRESHOLD_GROUP 
 where Tenant_id = 0
---where deleted = 'N';  --- EDIT this to Y or N based on Carissa Confirmation
+and deleted = 'N';  --- EDIT this to Y or N based on Carissa Confirmation
 
+
+
+DECLARE @sql varchar(8000);
+Declare @LINK int;
+Select @LINK = max(link) + 1 from  vision.LINK_THRESHOLD_GROUP 
+print @LINK
+
+SET @sql = '
+CREATE TABLE vision.##LINK_THRESHOLD_GROUP2(
+	[LINK] [int] Identity (' + CAST(@link AS varchar(15)) + ',1) NOT NULL,
+    [DESCRIPTION] [char](30) NOT NULL,
+	[THRESH_TYPE] [smallint] NULL,
+	[EXCEPTIONDAY_1] [smallint] NULL,
+	[EXCEPTIONDAY_2] [smallint] NULL,
+	[TENANT_ID] [numeric](19, 0) NOT NULL,
+	[DELETED] [char](1) NOT NULL)
+
+	';
+
+EXEC (@sql);
 
 WHILE @RowCount <= @NumberRecords
 
@@ -94,7 +74,7 @@ FROM #SecurityT
 WHERE RowID = @RowCount
 
 
-Insert into Vision.LINK_THRESHOLD_GROUP
+Insert into vision.##LINK_THRESHOLD_GROUP2
 (
 [DESCRIPTION]
 ,[THRESH_TYPE]
