@@ -1,60 +1,9 @@
---USE [GLOBAL]
---GO
-
---/****** Object:  Table [VISION].[Entity]    Script Date: 8/19/2021 10:23:51 AM ******/
---SET ANSI_NULLS ON
---GO
-
---SET QUOTED_IDENTIFIER ON
---GO
-
---CREATE TABLE [VISION].[Entity_Test](
---	[id] [int] IDENTITY(5420,1) NOT NULL,
---	[entity_name] [nvarchar](100) NOT NULL,
---	[description] [nvarchar](200) NULL,
---	[external_id] [nvarchar](50) NULL,
---	[version] [int] NULL,
---	[logical_delete] [bit] NOT NULL,
---	[entity_info] [varchar](100) NULL,
---	[entity_type_id] [int] NOT NULL,
---	[tenant_id] [numeric](19, 0) NOT NULL,
--- CONSTRAINT [PK_Entity_Test] PRIMARY KEY CLUSTERED 
---(
---	[id] ASC
---)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
---) ON [PRIMARY]
---GO
-
---ALTER TABLE [VISION].[Entity_Test] ADD  DEFAULT ((0)) FOR [logical_delete]
---GO
-
---ALTER TABLE [VISION].[Entity_Test] ADD  DEFAULT ((0)) FOR [tenant_id]
---GO
-
---ALTER TABLE [VISION].[Entity_Test]  WITH NOCHECK ADD  CONSTRAINT [FK_Entity_Test_Entity_Type] FOREIGN KEY([Entity_Test_type_id])
---REFERENCES [VISION].[Entity_Test_Type] ([id])
---GO
-
---ALTER TABLE [VISION].[Entity_Test] CHECK CONSTRAINT [FK_Entity_Test_Entity_Type]
---GO
-
---ALTER TABLE [VISION].[Entity_Test]  WITH NOCHECK ADD  CONSTRAINT [FK_Entity_Test_Tenant_Id] FOREIGN KEY([tenant_id])
---REFERENCES [VISION].[SECURITY_TENANT] ([id])
---GO
-
---ALTER TABLE [VISION].[Entity_Test] CHECK CONSTRAINT [FK_Entity_Tenant_Id]
---GO
-
-
-
-
-
-
-------------------------------------------------------------
 
 
 DROP Table IF Exists #SecurityT
 DROP Table IF Exists #Entity1
+DROP Table if exists vision.##Entity2
+
 
 CREATE TABLE #SecurityT (
  RowID int IDENTITY(1, 1),
@@ -111,6 +60,28 @@ where Tenant_id = 0
 --where deleted = 'N';  --- EDIT this to Y or N based on Carissa Confirmation
 
 
+DECLARE @sql varchar(8000);
+Declare @LINK int;
+Select @LINK = max(ID) + 1 from  vision.Entity
+print @LINK
+
+SET @sql = '
+CREATE TABLE vision.##Entity2(
+	[ID] [int] Identity (' + CAST(@link AS varchar(15)) + ',1) NOT NULL,
+   [entity_name] [nvarchar](100) NOT NULL,
+	[description] [nvarchar](200) NULL,
+	[external_id] [nvarchar](50) NULL,
+	[version] [int] NULL,
+	[logical_delete] [bit] NOT NULL,
+	[entity_info] [varchar](100) NULL,
+	[entity_type_id] [int] NOT NULL,
+	[tenant_id] [numeric](19, 0) NOT NULL)
+
+	';
+
+EXEC (@sql);
+
+
 WHILE @RowCount <= @NumberRecords
 
 BEGIN
@@ -120,7 +91,7 @@ FROM #SecurityT
 WHERE RowID = @RowCount
 
 
-Insert into Vision.Entity
+Insert into vision.##Entity2
 (
  
         [entity_name]
@@ -145,6 +116,9 @@ from  #Entity1
 
 SET @RowCount = @RowCount + 1
 END
+
+
+Select * from vision.##Entity2
 
 DROP TABLE #SecurityT
 Drop Table #Entity1 
