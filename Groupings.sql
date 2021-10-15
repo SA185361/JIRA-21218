@@ -1,37 +1,9 @@
---USE [GLOBAL]
---GO
 
---/****** Object:  Table [VISION].[Groupings]    Script Date: 8/30/2021 8:26:08 AM ******/
---SET ANSI_NULLS ON
---GO
-
---SET QUOTED_IDENTIFIER ON
---GO
-
---CREATE TABLE [VISION].[Groupings_Test](
---	[id] [int] IDENTITY(1,1) NOT NULL,
---	[groupings_name] [nvarchar](100) NOT NULL,
---	[description] [nvarchar](200) NULL,
---	[entity_type_id] [int] NULL,
---	[attribute_last_updated_on] [datetime] NULL,
---	[scope] [int] NOT NULL,
---	[tenant_id] [numeric](19, 0) NOT NULL,
--- CONSTRAINT [PK_Groupings_Test] PRIMARY KEY CLUSTERED 
---(
---	[id] ASC
---)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
---) ON [PRIMARY]
---GO
-
-
-
-
-
-------------------------------------------------------------
 
 
 DROP Table IF Exists #SecurityT
 DROP Table IF Exists #Groupings1
+DROP Table if exists vision.##Groupings2
 
 CREATE TABLE #SecurityT (
  RowID int IDENTITY(1, 1),
@@ -51,6 +23,7 @@ INSERT INTO #SecurityT (ID,Name)
 SET @NumberRecords = @@rowcount
 SET @RowCount = 1
 
+
 Create Table #Groupings1 
 (
    	
@@ -59,7 +32,7 @@ Create Table #Groupings1
 	[entity_type_id] [int] NULL,
 	[attribute_last_updated_on] [datetime] NULL,
 	[scope] [int] NOT NULL,
-	[tenant_id] [numeric](19, 0) NOT NULL)
+	[tenant_id] [numeric](19, 0) NOT NULL )
 
 
 Insert into #Groupings1 
@@ -79,7 +52,27 @@ Select
            ,[tenant_id]
 from vision.Groupings 
 where Tenant_id = 0
---where deleted = 'N';  --- EDIT this to Y or N based on Carissa Confirmation
+--and deleted = 'N';  --- EDIT this to Y or N based on Carissa Confirmation
+
+
+DECLARE @sql varchar(8000);
+Declare @LINK int;
+Select @LINK = max(id) + 1 from vision.Groupings
+print @LINK
+
+SET @sql = '
+CREATE TABLE vision.##Groupings2(
+	[id] [int] Identity (' + CAST(@link AS varchar(15)) + ',1) NOT NULL,
+   [groupings_name] [nvarchar](100) NOT NULL,
+	[description] [nvarchar](200) NULL,
+	[entity_type_id] [int] NULL,
+	[attribute_last_updated_on] [datetime] NULL,
+	[scope] [int] NOT NULL,
+	[tenant_id] [numeric](19, 0) NOT NULL )
+
+	';
+
+EXEC (@sql);
 
 
 WHILE @RowCount <= @NumberRecords
@@ -91,7 +84,7 @@ FROM #SecurityT
 WHERE RowID = @RowCount
 
 
-Insert into Vision.Groupings
+Insert into vision.##Groupings2
 (
  [groupings_name]
            ,[description]
@@ -110,6 +103,9 @@ from  #Groupings1
 
 SET @RowCount = @RowCount + 1
 END
+
+
+Select * from vision.##Groupings2
 
 DROP TABLE #SecurityT
 Drop Table #Groupings1 
