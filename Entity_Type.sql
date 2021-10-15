@@ -1,38 +1,10 @@
---USE [GLOBAL]
---GO
-
---/****** Object:  Table [VISION].[Entity_Type]    Script Date: 8/30/2021 7:46:01 AM ******/
---SET ANSI_NULLS ON
---GO
-
---SET QUOTED_IDENTIFIER ON
---GO
-
---CREATE TABLE [VISION].[Entity_Type_Test](
---	[id] [int] IDENTITY(2,1) NOT NULL,
---	[entity_type_name] [nvarchar](50) NOT NULL,
---	[description] [nvarchar](100) NOT NULL,
---	[icon_class] [varchar](25) NULL,
---	[MONITOR_LOGIC] [nvarchar](50) NULL,
---	[MONITOR_INTERVAL_MS] [int] NULL,
---	[MONITORING] [int] NULL,
---	[tenant_id] [numeric](19, 0) NOT NULL,
--- CONSTRAINT [PK_Entity_Type_Test] PRIMARY KEY CLUSTERED 
---(
---	[id] ASC
---)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
---) ON [PRIMARY]
---GO
-
-
-
-
-
-------------------------------------------------------------
 
 
 DROP Table IF Exists #SecurityT
 DROP Table IF Exists #Entity_Type_Test1
+DROP Table if exists vision.##Entity_Type2
+
+
 
 CREATE TABLE #SecurityT (
  RowID int IDENTITY(1, 1),
@@ -82,7 +54,29 @@ Select
            ,[tenant_id]
 from vision.Entity_Type 
 where Tenant_id = 0
---where deleted = 'N';  --- EDIT this to Y or N based on Carissa Confirmation
+--and deleted = 'N';  --- EDIT this to Y or N based on Carissa Confirmation
+
+
+
+DECLARE @sql varchar(8000);
+Declare @LINK int;
+Select @LINK = max(ID) + 1 from  vision.Entity_Type  
+print @LINK
+
+SET @sql = '
+CREATE TABLE vision.##Entity_Type2(
+	[ID] [int] Identity (' + CAST(@link AS varchar(15)) + ',1) NOT NULL,
+   	[entity_type_name] [nvarchar](50) NOT NULL,
+	[description] [nvarchar](100) NOT NULL,
+	[icon_class] [varchar](25) NULL,
+	[MONITOR_LOGIC] [nvarchar](50) NULL,
+	[MONITOR_INTERVAL_MS] [int] NULL,
+	[MONITORING] [int] NULL,
+	[tenant_id] [numeric](19, 0) NOT NULL)
+
+	';
+
+EXEC (@sql);
 
 
 WHILE @RowCount <= @NumberRecords
@@ -94,7 +88,7 @@ FROM #SecurityT
 WHERE RowID = @RowCount
 
 
-Insert into Vision.Entity_Type
+Insert into vision.##Entity_Type2
 (
  		    [entity_type_name]
            ,[description]
@@ -118,6 +112,8 @@ from  #Entity_Type_Test1
 
 SET @RowCount = @RowCount + 1
 END
+
+Select * from vision.##Entity_Type2
 
 DROP TABLE #SecurityT
 Drop Table #Entity_Type_Test1 
