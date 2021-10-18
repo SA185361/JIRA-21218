@@ -5,6 +5,10 @@
 
 DROP Table IF Exists #SecurityT
 DROP Table IF Exists #Branch1
+DROP Table if exists vision.##Branch2
+
+
+
 
 CREATE TABLE #SecurityT (
  RowID int IDENTITY(1, 1),
@@ -42,7 +46,26 @@ DELETED ,
 [VERSION] 
 from vision.Branch 
 where Tenant_id = 0
---where deleted = 'N';  --- EDIT this to Y or N based on Carissa Confirmation
+and deleted = 'N';  --- EDIT this to Y or N based on Carissa Confirmation
+
+
+DECLARE @sql varchar(8000);
+Declare @LINK int;
+Select @LINK = max(link) + 1 from vision.Branch 
+print @LINK
+
+SET @sql = '
+CREATE TABLE vision.##Branch2(
+	[LINK] [int] Identity (' + CAST(@link AS varchar(15)) + ',1) NOT NULL,
+    	[DESCRIPTION] [nvarchar](30) NULL,
+	[PRCNT] [int] NULL,
+	[TENANT_ID] [numeric](19, 0) NOT NULL,
+	[DELETED] [char](1) NOT NULL,
+	[VERSION] [int] NOT NULL)
+
+	';
+
+EXEC (@sql);
 
 
 WHILE @RowCount <= @NumberRecords
@@ -54,7 +77,7 @@ FROM #SecurityT
 WHERE RowID = @RowCount
 
 
-Insert into Vision.Branch( DESCRIPTION, PRCNT, TENANT_ID, DELETED, VERSION)
+Insert into vision.##Branch2( DESCRIPTION, PRCNT, TENANT_ID, DELETED, VERSION)
 Select 
 [DESCRIPTION],
 PRCNT,
@@ -66,6 +89,8 @@ from  #Branch1
 SET @RowCount = @RowCount + 1
 END
 
+Select * from vision.##Branch2
+
 DROP TABLE #SecurityT
 Drop Table #Branch1 
 
@@ -73,16 +98,4 @@ Drop Table #Branch1
 GO
 
 
---DBCC CHECKIDENT('vision.Branch_Test')
-
---DBCC CHECKIDENT('vision.Branch_Test',reseed,1285)
-
-
-
-
----- FINAL Total: 332568
-
-
---DELETE from Vision.Branch_test
-
---Select count(*) from [VISION].[BRANCH_Test]
+-- Select * from [VISION].[BRANCH]
