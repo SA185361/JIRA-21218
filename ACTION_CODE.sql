@@ -1,52 +1,9 @@
---USE [GLOBAL]
---GO
 
---/****** Object:  Table [VISION].[ACTION_CODE]    Script Date: 8/19/2021 8:08:09 AM ******/
---SET ANSI_NULLS ON
---GO
-
---SET QUOTED_IDENTIFIER ON
---GO
-
---CREATE TABLE [VISION].[ACTION_CODE_Test](
---	[LINK] [int] NOT NULL identity(76,1),
---	[DESCRIPTION] [nvarchar](30) NULL,
---	[RGB_COLOR] [int] NULL,
---	[REOPEN_LIMIT] [smallint] NULL,
---	[ACTION_COLUMN] [smallint] NULL,
---	[FILTER] [int] NULL,
---	[COLOR] [smallint] NULL,
---	[ARRIVAL_TO_CLEAR] [int] NULL,
---	[PERFORMANCE_COL] [smallint] NULL,
---	[PERFORMANCE_132COL] [smallint] NULL,
---	[AUTODIALER] [smallint] NULL,
---	[DOWNHOURS1] [int] NULL,
---	[DOWNCOLOR1] [int] NULL,
---	[DOWNHOURS2] [int] NULL,
---	[DOWNCOLOR2] [int] NULL,
---	[DOWNHOURS3] [int] NULL,
---	[DOWNCOLOR3] [int] NULL,
---	[VERSION] [int] NOT NULL,
---	[MAINTENANCE_MODE_EXCEPTION] [char](1) NULL,
--- CONSTRAINT [pk_ACTION_CODE_Test] PRIMARY KEY CLUSTERED 
---(
---	[LINK] ASC
---)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, FILLFACTOR = 90) ON [PRIMARY]
---) ON [PRIMARY]
---GO
-
---ALTER TABLE [VISION].[ACTION_CODE_Test] ADD  DEFAULT ((1)) FOR [VERSION]
---GO
-
-
-
-
-
-----------------------------------------------------------
 
 
 DROP Table IF Exists #SecurityT
 DROP Table IF Exists #ACTION_CODE1
+DROP Table if exists vision.##ACTION_CODE2
 
 CREATE TABLE #SecurityT (
  RowID int IDENTITY(1, 1),
@@ -133,6 +90,39 @@ where Tenant_id = 0
 --where deleted = 'N';  --- EDIT this to Y or N based on Carissa Confirmation
 
 
+
+DECLARE @sql varchar(8000);
+Declare @LINK int;
+Select @LINK = max(link) + 1 from  vision.ACTION_CODE
+print @LINK
+
+SET @sql = '
+CREATE TABLE vision.##ACTION_CODE2(
+	[LINK] [int] Identity (' + CAST(@link AS varchar(15)) + ',1) NOT NULL,
+   [DESCRIPTION] [nvarchar](30) NULL,
+	[RGB_COLOR] [int] NULL,
+	[REOPEN_LIMIT] [smallint] NULL,
+	[ACTION_COLUMN] [smallint] NULL,
+	[FILTER] [int] NULL,
+	[COLOR] [smallint] NULL,
+	[ARRIVAL_TO_CLEAR] [int] NULL,
+	[PERFORMANCE_COL] [smallint] NULL,
+	[PERFORMANCE_132COL] [smallint] NULL,
+	[AUTODIALER] [smallint] NULL,
+	[DOWNHOURS1] [int] NULL,
+	[DOWNCOLOR1] [int] NULL,
+	[DOWNHOURS2] [int] NULL,
+	[DOWNCOLOR2] [int] NULL,
+	[DOWNHOURS3] [int] NULL,
+	[DOWNCOLOR3] [int] NULL,
+	[VERSION] [int] NOT NULL,
+	[MAINTENANCE_MODE_EXCEPTION] [char](1) NULL)
+
+	';
+
+EXEC (@sql);
+
+
 WHILE @RowCount <= @NumberRecords
 
 BEGIN
@@ -142,7 +132,7 @@ FROM #SecurityT
 WHERE RowID = @RowCount
 
 
-Insert into Vision.ACTION_CODE
+Insert into vision.##ACTION_CODE2
 (
  [DESCRIPTION]
            ,[RGB_COLOR]
@@ -186,6 +176,8 @@ from  #ACTION_CODE1
 SET @RowCount = @RowCount + 1
 END
 
+Select * from vision.##ACTION_CODE2
+
 DROP TABLE #SecurityT
 Drop Table #ACTION_CODE1 
 
@@ -193,20 +185,3 @@ Drop Table #ACTION_CODE1
 GO
 
 -- Select * from [VISION].[ACTION_CODE]
-
--- DBCC CHECKIDENT('vision.ACTION_CODE_Test')
-
--- DBCC CHECKIDENT('vision.ACTION_CODE_Test',reseed,76)
-
-
-
---      Select 596 * 75
---      FINAL Total: 44700
-
-
---  DELETE from Vision.ACTION_CODE_test
-
---  Select count(*) from [VISION].[ACTION_CODE_Test]
-
---Select * from [VISION].[ACTION_CODE_Test]
---where TENANT_ID =1 
