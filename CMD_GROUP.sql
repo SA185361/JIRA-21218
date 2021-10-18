@@ -1,45 +1,8 @@
---USE [GLOBAL]
---GO
-
---/****** Object:  Table [VISION].[CMD_GROUP_Test]    Script Date: 8/19/2021 8:44:17 AM ******/
---SET ANSI_NULLS ON
---GO
-
---SET QUOTED_IDENTIFIER ON
---GO
-
---CREATE TABLE [VISION].[CMD_GROUP_Test](
---	[GROUP_LINK] [numeric](10, 0) Identity(4,1)NOT NULL,
---	[DESCRIPTION] [varchar](255) NULL,
---	[TENANT_ID] [numeric](18, 0) NOT NULL,
---	[DELETED] [char](1) NULL,
---	[VERSION] [numeric](10, 0) NULL,
---	[IMPLEMENTATION] [varchar](255) NULL,
--- CONSTRAINT [PK_CMD_GROUP_Test] PRIMARY KEY CLUSTERED 
---(
---	[GROUP_LINK] ASC
---)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
---) ON [PRIMARY]
---GO
-
---ALTER TABLE [VISION].[CMD_GROUP_Test] ADD  DEFAULT ((0)) FOR [TENANT_ID]
---GO
-
---ALTER TABLE [VISION].[CMD_GROUP_Test] ADD  DEFAULT ('N') FOR [DELETED]
---GO
-
---ALTER TABLE [VISION].[CMD_GROUP_Test] ADD  DEFAULT ((1)) FOR [VERSION]
---GO
-
-
-
-
-
-------------------------------------------------------------
 
 
 DROP Table IF Exists #SecurityT
 DROP Table IF Exists #CMD_GROUP1
+DROP Table if exists vision.##CMD_GROUP2
 
 CREATE TABLE #SecurityT (
  RowID int IDENTITY(1, 1),
@@ -86,7 +49,27 @@ Select
            ,[IMPLEMENTATION]
 from vision.CMD_GROUP 
 where Tenant_id = 0
--- where deleted = 'N';  --- EDIT this to Y or N based on Carissa Confirmation
+and deleted = 'N';  --- EDIT this to Y or N based on Carissa Confirmation
+
+
+DECLARE @sql varchar(8000);
+Declare @LINK int;
+Select @LINK = max(group_link) + 1 from  vision.CMD_GROUP 
+print @LINK
+
+SET @sql = '
+CREATE TABLE vision.##CMD_GROUP2(
+	[group_link] [int] Identity (' + CAST(@link AS varchar(15)) + ',1) NOT NULL,
+   [DESCRIPTION] [varchar](255) NULL,
+	[TENANT_ID] [numeric](18, 0) NOT NULL,
+	[DELETED] [char](1) NULL,
+	[VERSION] [numeric](10, 0) NULL,
+	[IMPLEMENTATION] [varchar](255) NULL)
+
+	';
+
+EXEC (@sql);
+
 
 
 WHILE @RowCount <= @NumberRecords
@@ -98,7 +81,7 @@ FROM #SecurityT
 WHERE RowID = @RowCount
 
 
-Insert into Vision.CMD_GROUP
+Insert into vision.##CMD_GROUP2
 (
           [DESCRIPTION]
            ,[TENANT_ID]
@@ -117,6 +100,8 @@ from  #CMD_GROUP1
 SET @RowCount = @RowCount + 1
 END
 
+
+Select * from vision.##CMD_GROUP2
 DROP TABLE #SecurityT
 Drop Table #CMD_GROUP1 
 
@@ -124,20 +109,3 @@ Drop Table #CMD_GROUP1
 GO
 
 -- Select * from [VISION].[CMD_GROUP]
-
--- DBCC CHECKIDENT('vision.CMD_GROUP_Test')
-
--- DBCC CHECKIDENT('vision.CMD_GROUP_Test',reseed,365)
-
-
-
---      Select 596 * 3
---      FINAL Total: 1788
-
-
---  DELETE from Vision.CMD_GROUP_test
-
---  Select count(*) from [VISION].[CMD_GROUP_Test]
-
---Select * from [VISION].[CMD_GROUP_Test]
---where TENANT_ID =1 
