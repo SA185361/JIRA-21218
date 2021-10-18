@@ -1,57 +1,9 @@
---USE [GLOBAL]
---GO
 
---/****** Object:  Table [VISION].[COMMAND_SCRIPT]    Script Date: 8/19/2021 9:58:08 AM ******/
---SET ANSI_NULLS ON
---GO
-
---SET QUOTED_IDENTIFIER ON
---GO
-
---CREATE TABLE [VISION].[COMMAND_SCRIPT_Test](
---	[LINK] [smallint] NOT NULL Identity(19,1),
---	[DESCRIPTION] [varchar](30) NULL,
---	[SPOKEN_TEXT] [varchar](70) NULL,
---	[VERIFIED] [int] NULL,
---	[DISPATCHER_MENU] [smallint] NULL,
---	[DISPATCHER_SUBMENU] [smallint] NULL,
---	[WORKSTATION_MENU] [smallint] NULL,
---	[CONNECTION_GROUP_LINK] [smallint] NULL,
---	[NOTIFICATION_METHOD] [smallint] NULL,
---	[LONG_TEXT] [text] NULL,
---	[TENANT_ID] [numeric](19, 0) NOT NULL,
---	[DELETED] [char](1) NOT NULL,
--- CONSTRAINT [pk_COMMAND_SCRIPT_Test] PRIMARY KEY CLUSTERED 
---(
---	[LINK] ASC
---)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, FILLFACTOR = 90) ON [PRIMARY]
---) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
---GO
-
---ALTER TABLE [VISION].[COMMAND_SCRIPT_Test] ADD  DEFAULT ((0)) FOR [TENANT_ID]
---GO
-
---ALTER TABLE [VISION].[COMMAND_SCRIPT_Test] ADD  DEFAULT ('N') FOR [DELETED]
---GO
-
---ALTER TABLE [VISION].[COMMAND_SCRIPT_Test]  WITH NOCHECK ADD  CONSTRAINT [FK_COMMAND_SCRIPT_Test_TENANT_ID] FOREIGN KEY([TENANT_ID])
---REFERENCES [VISION].[SECURITY_TENANT] ([id])
---GO
-
---ALTER TABLE [VISION].[COMMAND_SCRIPT_Test] CHECK CONSTRAINT [FK_COMMAND_SCRIPT_Test_TENANT_ID]
---GO
-
-
-
-
-
-
-
-------------------------------------------------------------
 
 
 DROP Table IF Exists #SecurityT
 DROP Table IF Exists #COMMAND_SCRIPT1
+DROP Table if exists vision.##COMMAND_SCRIPT2
 
 CREATE TABLE #SecurityT (
  RowID int IDENTITY(1, 1),
@@ -113,10 +65,34 @@ SELECT
       ,[LONG_TEXT]
       ,[TENANT_ID]
       ,[DELETED]
-  FROM [GLOBAL].[VISION].[COMMAND_SCRIPT]
+  FROM [VISION].[COMMAND_SCRIPT]
   where Tenant_id = 0
---where deleted = 'N';  --- EDIT this to Y or N based on Carissa Confirmation
+and deleted = 'N';  --- EDIT this to Y or N based on Carissa Confirmation
 
+
+DECLARE @sql varchar(8000);
+Declare @LINK int;
+Select @LINK = max(link) + 1 from [VISION].[COMMAND_SCRIPT]
+print @LINK
+
+SET @sql = '
+CREATE TABLE vision.##COMMAND_SCRIPT2(
+	[LINK] [int] Identity (' + CAST(@link AS varchar(15)) + ',1) NOT NULL,
+   [DESCRIPTION] [varchar](30) NULL,
+	[SPOKEN_TEXT] [varchar](70) NULL,
+	[VERIFIED] [int] NULL,
+	[DISPATCHER_MENU] [smallint] NULL,
+	[DISPATCHER_SUBMENU] [smallint] NULL,
+	[WORKSTATION_MENU] [smallint] NULL,
+	[CONNECTION_GROUP_LINK] [smallint] NULL,
+	[NOTIFICATION_METHOD] [smallint] NULL,
+	[LONG_TEXT] [text] NULL,
+	[TENANT_ID] [numeric](19, 0) NOT NULL,
+	[DELETED] [char](1) NOT NULL)
+
+	';
+
+EXEC (@sql);
 
 WHILE @RowCount <= @NumberRecords
 
@@ -127,7 +103,7 @@ FROM #SecurityT
 WHERE RowID = @RowCount
 
 
-Insert into Vision.COMMAND_SCRIPT
+Insert into vision.##COMMAND_SCRIPT2
 (
        [DESCRIPTION]
       ,[SPOKEN_TEXT]
@@ -158,6 +134,8 @@ from  #COMMAND_SCRIPT1
 SET @RowCount = @RowCount + 1
 END
 
+Select * from vision.##COMMAND_SCRIPT2
+
 DROP TABLE #SecurityT
 Drop Table #COMMAND_SCRIPT1 
 
@@ -165,20 +143,3 @@ Drop Table #COMMAND_SCRIPT1
 GO
 
 -- Select * from [VISION].[COMMAND_SCRIPT]
-
--- DBCC CHECKIDENT('vision.COMMAND_SCRIPT_Test')
-
--- DBCC CHECKIDENT('vision.COMMAND_SCRIPT_Test',reseed,31)
-
-
-
---      Select 596 * 18
---      FINAL Total: 10728
-
-
---  DELETE from Vision.COMMAND_SCRIPT_test
-
---  Select count(*) from [VISION].[COMMAND_SCRIPT_Test]
-
---Select * from [VISION].[COMMAND_SCRIPT_Test]
---where TENANT_ID =1 
